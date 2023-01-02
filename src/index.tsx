@@ -7,12 +7,17 @@ import {
 } from "react-router-dom";
 import Root from './routes/root'
 import reportWebVitals from './reportWebVitals';
+import Profile from './routes/profile';
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Root/>
   },
+  {
+    path:"/profile",
+    element: <Profile/>
+  }
 ]);
 
 const root = ReactDOM.createRoot(
