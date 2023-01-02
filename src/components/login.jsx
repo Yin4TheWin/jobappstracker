@@ -1,26 +1,29 @@
-import React from "react";
+import {useState} from "react";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
 import {firebase} from '../firebase'
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, updateProfile } from "firebase/auth";
+import { getDatabase, ref, set, get } from "firebase/database";
 
 import ModalPopup from "../components/modal";
 
 import '../styles/profile.css'
 
 export default function Login(){
-    const [email, setEmail] = React.useState("")
-    const [password, setPassword] = React.useState("")
-    const [loginState, toggleLoginState] = React.useState(true)
-    const [confirmPassword, setConfirmedPassword] = React.useState("")
-    const [showForgotPasswordModal, toggleModal] = React.useState(false);
+    const [username, setUsername] = useState()
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [loginState, toggleLoginState] = useState(true)
+    const [confirmPassword, setConfirmedPassword] = useState("")
+    const [showForgotPasswordModal, toggleModal] = useState(false);
 
-    const [showGeneralModal, toggleGeneralModal] = React.useState(false);
-    const [generalModalText, setModalText] = React.useState("")
-    const [generalModalHeader, setModalHeader] = React.useState("")
+    const [showGeneralModal, toggleGeneralModal] = useState(false);
+    const [generalModalText, setModalText] = useState("")
+    const [generalModalHeader, setModalHeader] = useState("")
 
-    const [auth] = React.useState(getAuth(firebase));
+    const [auth] = useState(getAuth(firebase));
+    const [db] = useState(getDatabase(firebase));
 
     function checkForStrongPassword(password){
         return password.length >= 8 && /[A-Z]/.test(password) && /[a-z]/.test(password) && /[0-9]/.test(password)
@@ -28,6 +31,10 @@ export default function Login(){
 
     function checkForValidEmail(email){
         return email.split("@").length===2 && email.split("@")[1].split(".").length===2
+    }
+
+    function checkForValidUsername(username){
+        return username.match("^[A-Za-z0-9]+$");
     }
 
     function handleAuthentication(){
@@ -45,13 +52,31 @@ export default function Login(){
                 generateModal("Passwords Don't Match!", "Please ensure \"Password\" and \"Confirm password\" fields are the same.")
             else {
                 if(checkForStrongPassword(password)) {
-                    createUserWithEmailAndPassword(auth, email, password)
-                    .then(() => {
-                    })
-                    .catch((error) => {
-                        const errorMessage = error.message;
-                        generateModal("Sign Up Failed", errorMessage)
-                    })
+                    if(checkForValidUsername(username)){
+                        get(ref(db,'username/'+username.toLowerCase())).then((snapshot)=>{
+                            if(snapshot.exists()){
+                                generateModal("Username Taken", "Sorry, but an account already exists with this username!")
+                            } else {
+                                createUserWithEmailAndPassword(auth, email, password)
+                                .then((userCredential) => {
+                                    const user=userCredential.user;
+                                    updateProfile(user, {
+                                        displayName: username.toLowerCase()
+                                    }).then(()=>{
+                                        set(ref(db, 'username/'+username),user.email)
+                                    })
+                                })
+                                .catch((error) => {
+                                    const errorMessage = error.message;
+                                    generateModal("Sign Up Failed", errorMessage)
+                                })
+                            }
+                        }).catch(error=>{
+                            const errorMessage = error.message;
+                            generateModal("Sign Up Failed", errorMessage)
+                        })
+                    } else
+                        generateModal("Bad Username", "Username must exist and contain only letters and numbers.")   
                 }
                 else
                     generateModal("Password Not Secure!", "Please ensure your password is at least eight characters long and contains at least one uppercase letter, one lowercase letter, and one number.")
@@ -71,7 +96,18 @@ export default function Login(){
              header={"Forgot Password?"} 
              body={<div>
                 <p>Enter the email address you made your account with and press submit to receive a password reset email.</p>
-                <Form>
+                <Form onSubmit={(e)=>{
+                    e.preventDefault()
+                    if(checkForValidEmail(email)){
+                        sendPasswordResetEmail(auth,email).then(()=>{
+                            generateModal("Check Your Inbox", "If we have your email on file, we'll send a password reset email shortly.")  
+                        }).catch((err)=>{
+                            generateModal("Something went wrong", err.message)
+                        })
+                    } else{
+                        generateModal("Invalid Email", "Please make sure the inputted email is valid.")
+                    }
+                }}>
                     <Form.Group>
                       <Form.Control type="email" placeholder="example@email.com" value={email}  onChange={(e) => {
                         setEmail(e.target.value)
@@ -108,7 +144,19 @@ export default function Login(){
             <h1>{loginState?"Log In":"Sign Up"}</h1>
             <p style={{textAlign:'center'}}>{loginState?"Don't have an account?":"Already have an account?"} <button className="link" onClick={() =>{ 
                 toggleLoginState(!loginState) }}>Click here</button> to {loginState?"sign up":"log in"}</p>  
-            <Form>
+            <Form onSubmit={(e)=>{
+                    e.preventDefault()
+                    handleAuthentication()  
+                }}>
+                {
+                    !loginState?
+                    <Form.Group>
+                        <Form.Label for="username" size="lg">Username</Form.Label>
+                        <Form.Control className="login" value={username} type="text" name="username" id="confirm" placeholder="enter a username" size="lg" onChange={(e) => {
+                            setUsername(e.target.value)
+                        }} />
+                    </Form.Group>:<></>
+                }
                 <Form.Group>
                     <Form.Label for="email" size="lg">Email</Form.Label>
                     <Form.Control className="login" type="email" name="email" id="email" value={email} placeholder="email@example.com" size="lg" onChange={(e) => {
@@ -135,9 +183,7 @@ export default function Login(){
                         }}>Click here.</button>    
                     </p>
                 </Form.Group>
-                <Button size="lg" color="primary" className="center" onClick={()=>{
-                       handleAuthentication(auth,loginState,email,password,confirmPassword)  
-                }}>{loginState?"Log In":"Sign Up"}</Button>
+                <Button type="submit" size="lg" color="primary" className="center">{loginState?"Log In":"Sign Up"}</Button>
             </Form>
         </div>
     )

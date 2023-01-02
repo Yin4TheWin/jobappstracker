@@ -5,7 +5,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 import SiteNavbar from './navbar';
 import Login from '../components/login'
-import myLists from '../components/myLists';
+import MyLists from '../components/myLists';
 
 import '../styles/profile.css'
 
@@ -26,7 +26,7 @@ export default function Profile(){
     return (
         <div>
             <SiteNavbar/>
-            {user?<myLists/>:<Login/>}
+            {user?<MyLists auth={auth} user={user}/>:<Login/>}
         </div>
     )
 }

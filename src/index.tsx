@@ -4,6 +4,7 @@ import './index.css';
 import {
   createBrowserRouter,
   RouterProvider,
+  Navigate
 } from "react-router-dom";
 import Root from './routes/root'
 import reportWebVitals from './reportWebVitals';
@@ -12,7 +13,8 @@ import Profile from './routes/profile';
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Root/>
+    element: <Root/>,
+    errorElement: <Navigate to ="/"/>
   },
   {
     path:"/profile",
