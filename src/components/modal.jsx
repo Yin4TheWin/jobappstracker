@@ -1,13 +1,13 @@
 import Modal from 'react-bootstrap/Modal';
 
-export default function ModalPopup(props){
-    return (<Modal show={props.showModal} onHide={()=>{props.toggleModal()}}>
-    <Modal.Header closeButton>{props.header}</Modal.Header>
+export default function ModalPopup({showModal,toggleModal,header,body,footer}){
+    return (<Modal show={showModal} onHide={()=>{toggleModal()}}>
+    <Modal.Header closeButton>{header}</Modal.Header>
     <Modal.Body>
-        {props.body}
+        {body}
     </Modal.Body>
     <Modal.Footer>
-        {props.footer}
+        {footer}
     </Modal.Footer>
 </Modal>)
 }
