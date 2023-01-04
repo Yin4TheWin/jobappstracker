@@ -6,8 +6,8 @@ export default function ModalPopup({showModal,toggleModal,header,body,footer}){
     <Modal.Body>
         {body}
     </Modal.Body>
-    <Modal.Footer>
+    {footer?<Modal.Footer>
         {footer}
-    </Modal.Footer>
+    </Modal.Footer>:<></>}
 </Modal>)
 }

@@ -2,6 +2,7 @@ import {useState, useEffect} from 'react'
 
 import {firebase} from '../firebase'
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getDatabase } from "firebase/database";
 
 import SiteNavbar from './navbar';
 import Login from '../components/login'
@@ -12,6 +13,7 @@ import '../styles/profile.css'
 export default function Profile(){
     const [auth] = useState(getAuth(firebase));
     const [user, setUser] = useState(null);
+    const [db] = useState(getDatabase(firebase))
 
     useEffect(()=>{
         onAuthStateChanged(auth, (newUser) => {
@@ -24,9 +26,9 @@ export default function Profile(){
     }, [user, auth]);
 
     return (
-        <div>
+        <div className="background">
             <SiteNavbar/>
-            {user?<MyLists auth={auth} user={user}/>:<Login/>}
+            {user?<MyLists auth={auth} user={user} db={db}/>:<Login/>}
         </div>
     )
 }

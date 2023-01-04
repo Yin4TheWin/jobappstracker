@@ -1,4 +1,4 @@
-import {useState} from "react";
+import { useState, useEffect } from "react";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
@@ -24,6 +24,10 @@ export default function Login(){
 
     const [auth] = useState(getAuth(firebase));
     const [db] = useState(getDatabase(firebase));
+
+    useEffect(()=>{
+        document.title = 'Login';
+    },[])
 
     function checkForStrongPassword(password){
         return password.length >= 8 && /[A-Z]/.test(password) && /[a-z]/.test(password) && /[0-9]/.test(password)
@@ -53,7 +57,7 @@ export default function Login(){
             else {
                 if(checkForStrongPassword(password)) {
                     if(checkForValidUsername(username)){
-                        get(ref(db,'username/'+username.toLowerCase())).then((snapshot)=>{
+                        get(ref(db,'usernames/'+username.toLowerCase())).then((snapshot)=>{
                             if(snapshot.exists()){
                                 generateModal("Username Taken", "Sorry, but an account already exists with this username!")
                             } else {
@@ -85,9 +89,9 @@ export default function Login(){
     }
 
     function generateModal(header, body){
-        toggleGeneralModal(true)
         setModalHeader(header)
         setModalText(body)
+        toggleGeneralModal(true)
     }
     
     return (

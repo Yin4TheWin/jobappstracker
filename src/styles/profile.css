@@ -44,3 +44,7 @@
     color: gray;
     margin-bottom: 0.1em;
   }
+
+button.edit{
+    border-radius: 75px;
+}

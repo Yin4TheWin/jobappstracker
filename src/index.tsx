@@ -9,6 +9,7 @@ import {
 import Root from './routes/root'
 import reportWebVitals from './reportWebVitals';
 import Profile from './routes/profile';
+import NotFound from './routes/notFound';
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,10 @@ const router = createBrowserRouter([
   {
     path:"/profile",
     element: <Profile/>
+  },
+  {
+    path: ":username/:listId",
+    errorElement: <NotFound/>
   }
 ]);
 

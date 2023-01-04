@@ -1,7 +1,6 @@
 .header {
   display: flex;
   flex-direction: column;
-  margin-top: 2%;
   align-items: center;
   font-size: calc(10px + 2vmin);
   color: white;
@@ -40,6 +39,6 @@ p{
     transform: scale(1);
   }
   to {
-    transform: scale(0.95);
+    transform: scale(0.90);
   }
 }
