@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro' 
 
 import { signOut } from "firebase/auth"
-import { ref, onValue, set, remove, child, update } from "firebase/database";
+import { ref, onValue, update, get } from "firebase/database";
 
 import { Link } from 'react-router-dom';
 
@@ -20,7 +20,7 @@ export default function MyLists({auth, user, db}){
     const [newNameOfList, setNewNameOfList] = useState("")
 
     const [userLists, setUserLists] = useState(null)
-    const [userListsRef]= useState(ref(db, 'users/'+user.uid+'/listNames'))
+    const [userListsRef]= useState(ref(db, 'users/'+user.displayName+'/listNames'))
     const [selectedListItem, setSelectedListItem] = useState({state: null, val: ""})
 
     const [showModal, setShowModal] = useState(false)
@@ -33,7 +33,7 @@ export default function MyLists({auth, user, db}){
     useEffect(()=>{
         document.title = 'My Job Lists';
     },[])
-    
+
     useEffect(()=>{
         onValue(userListsRef, (snapshot)=>{
             if(snapshot.exists()){
@@ -76,7 +76,10 @@ export default function MyLists({auth, user, db}){
         footer={
             <>
                 <Button onClick={()=>{
-                    remove(child(userListsRef, selectedListItem.val)).then(()=>{
+                    const updates={}
+                    updates['users/'+user.displayName+'/listNames/'+selectedListItem.val]={}
+                    updates['users/'+user.displayName+'/listItems/'+selectedListItem.val]={}
+                    update(ref(db), updates).then(()=>{
                         setShowDeleteModal(!showDeleteModal)
                     })
                 }}>YES I AM SURE</Button>
@@ -94,11 +97,20 @@ export default function MyLists({auth, user, db}){
             e.preventDefault()
             if(newNameOfList.length>0){
                 if(userLists==null || !(newNameOfList in userLists)){
-                    const updates={}
-                    updates['users/'+user.uid+'/listNames/'+selectedListItem.val]={}
-                    updates['users/'+user.uid+'/listNames/'+newNameOfList]=Date.now()
-                    update(ref(db),updates).then(()=>{
-                        setShowEditModal(!showEditModal)
+                    get(ref(db, 'users/'+user.displayName+'/listItems/'+selectedListItem.val)).then((snapshot)=>{
+                        const updates={}
+                        
+                        updates['users/'+user.displayName+'/listNames/'+selectedListItem.val]={}
+                        updates['users/'+user.displayName+'/listNames/'+newNameOfList]=Date.now()
+
+                        updates['users/'+user.displayName+'/listItems/'+selectedListItem.val]={}
+                        updates['users/'+user.displayName+'/listItems/'+newNameOfList]=snapshot.val()
+
+                        update(ref(db),updates).then(()=>{
+                            setShowEditModal(!showEditModal)
+                        }).catch(err=>{
+                            generateModal("Something Went Wrong", err.message)
+                        })
                     }).catch(err=>{
                         generateModal("Something Went Wrong", err.message)
                     })
@@ -131,7 +143,10 @@ export default function MyLists({auth, user, db}){
         e.preventDefault()
         if(newListName.length>0){
             if(userLists==null || !(newListName in userLists)){
-                set(ref(db, 'users/'+user.uid+'/listNames/'+newListName), Date.now()).then(()=>{
+                const updates={}
+                updates['users/'+user.displayName+'/listNames/'+newListName]=Date.now()
+                updates['users/'+user.displayName+'/listItems/'+newListName]=0
+                update(ref(db), updates).then(()=>{
                     setNewListName("")
                     generateModal("List Was Created", newListName+" was successfully created! You may now access it under the \"My Lists\" table.")
                 }).catch(err=>{
@@ -157,7 +172,7 @@ export default function MyLists({auth, user, db}){
     <Table style={{marginTop: '1%'}} striped hover responsive="sm" size="sm">
       <thead>
         <tr>
-          <th style={{width: '95%'}}>My Lists</th>
+          <th style={{width: userLists==null?'100%':'95%'}}>My Lists</th>
           <th/>
           <th/>
         </tr>

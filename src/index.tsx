@@ -9,7 +9,10 @@ import {
 import Root from './routes/root'
 import reportWebVitals from './reportWebVitals';
 import Profile from './routes/profile';
-import NotFound from './routes/notFound';
+import ListView from './routes/listview';
+
+import {firebase} from './firebase'
+import { getDatabase, ref, get } from "firebase/database";
 
 const router = createBrowserRouter([
   {
@@ -23,7 +26,14 @@ const router = createBrowserRouter([
   },
   {
     path: ":username/:listId",
-    errorElement: <NotFound/>
+    element: <ListView/>,
+    loader: async ({params})=>{
+      const db = getDatabase(firebase);
+      const username=params.username?params.username.toLowerCase():"null"
+      const listId=params.listId?params.listId.toLowerCase():"null"
+      const snapshot = await get(ref(db, 'users/'+username+'/listItems/'+listId))
+      return snapshot.exists()?snapshot.val():null
+    }
   }
 ]);
 
