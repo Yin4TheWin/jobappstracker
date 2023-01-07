@@ -2,12 +2,14 @@ import { useEffect } from 'react';
 import logo from '../imgs/logo.png';
 import '../styles/root.css';
 import SiteNavbar from './navbar';
+//@ts-ignore
+import init from 'https://dynamiccircuit.kihtrak.com/dynamic-circuit.js';
 
 export default function Root(){
 
     useEffect(()=>{
         document.title = 'Job App Tracker';
-        // init(document.getElementById('circuit'))
+        init(document.getElementById('circuit'))
     },[])
 
     return (
