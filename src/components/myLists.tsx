@@ -3,25 +3,35 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Button from 'react-bootstrap/Button'
 import Table from 'react-bootstrap/Table';
-import ModalPopup from "../components/modal";
+import ModalPopup from "./modal";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro' 
 
-import { signOut } from "firebase/auth"
-import { ref, onValue, update, get } from "firebase/database";
+import { Auth, signOut, User } from "firebase/auth"
+import { ref, onValue, update, get, Database } from "firebase/database";
 
 import { Link } from 'react-router-dom';
 
-import { useEffect, useState } from 'react';
+import { SetStateAction, useEffect, useState } from 'react';
 
-export default function MyLists({auth, user, db}){
+interface MyListProps{
+    auth: Auth,
+    user: User,
+    db: Database
+}
+
+interface DatabaseUpdates{
+    [index: string]: any
+}
+
+export default function MyLists({auth, user, db}: MyListProps){
     const [newListName, setNewListName] = useState("")
     const [newNameOfList, setNewNameOfList] = useState("")
 
     const [userLists, setUserLists] = useState(null)
     const [userListsRef]= useState(ref(db, 'users/'+user.displayName+'/listNames'))
-    const [selectedListItem, setSelectedListItem] = useState({state: null, val: ""})
+    const [selectedListItem, setSelectedListItem] = useState({state: "", val: ""})
 
     const [showModal, setShowModal] = useState(false)
     const [modalText, setModalText] = useState("")
@@ -54,7 +64,7 @@ export default function MyLists({auth, user, db}){
         }
     }, [selectedListItem])
 
-    function generateModal(header, body){
+    function generateModal(header: SetStateAction<string>, body: SetStateAction<string>){
         setModalHeader(header)
         setModalText(body)
         setShowModal(true)
@@ -76,7 +86,7 @@ export default function MyLists({auth, user, db}){
         footer={
             <>
                 <Button onClick={()=>{
-                    const updates={}
+                    const updates: DatabaseUpdates={}
                     updates['users/'+user.displayName+'/listNames/'+selectedListItem.val]={}
                     updates['users/'+user.displayName+'/listItems/'+selectedListItem.val]={}
                     update(ref(db), updates).then(()=>{
@@ -87,53 +97,51 @@ export default function MyLists({auth, user, db}){
             </>
         }
         />
-        <ModalPopup showModal={showEditModal} 
-        toggleModal={()=>{setShowEditModal(!showEditModal)}}
+        <ModalPopup showModal={showEditModal}
+        toggleModal={() => { setShowEditModal(!showEditModal); } }
         header={"Change List Name"}
-        body={
-            <>
+        body={<>
             <p>Please choose a new name for your list:</p>
-            <Form onSubmit={(e)=>{
-            e.preventDefault()
-            if(newNameOfList.length>0){
-                if(userLists==null || !(newNameOfList in userLists)){
-                    get(ref(db, 'users/'+user.displayName+'/listItems/'+selectedListItem.val)).then((snapshot)=>{
-                        const updates={}
-                        
-                        updates['users/'+user.displayName+'/listNames/'+selectedListItem.val]={}
-                        updates['users/'+user.displayName+'/listNames/'+newNameOfList]=Date.now()
+            <Form onSubmit={(e) => {
+                e.preventDefault();
+                if (newNameOfList.length > 0) {
+                    if (userLists == null || !(newNameOfList in userLists)) {
+                        get(ref(db, 'users/' + user.displayName + '/listItems/' + selectedListItem.val)).then((snapshot) => {
+                            const updates: DatabaseUpdates = {};
 
-                        updates['users/'+user.displayName+'/listItems/'+selectedListItem.val]={}
-                        updates['users/'+user.displayName+'/listItems/'+newNameOfList]=snapshot.val()
+                            updates['users/' + user.displayName + '/listNames/' + selectedListItem.val] = {};
+                            updates['users/' + user.displayName + '/listNames/' + newNameOfList] = Date.now();
 
-                        update(ref(db),updates).then(()=>{
-                            setShowEditModal(!showEditModal)
-                        }).catch(err=>{
-                            generateModal("Something Went Wrong", err.message)
-                        })
-                    }).catch(err=>{
-                        generateModal("Something Went Wrong", err.message)
-                    })
-                } else{
-                    generateModal("List Already Exists", "You already own a list with that name!")
+                            updates['users/' + user.displayName + '/listItems/' + selectedListItem.val] = {};
+                            updates['users/' + user.displayName + '/listItems/' + newNameOfList] = snapshot.val();
+
+                            update(ref(db), updates).then(() => {
+                                setShowEditModal(!showEditModal);
+                            }).catch(err => {
+                                generateModal("Something Went Wrong", err.message);
+                            });
+                        }).catch(err => {
+                            generateModal("Something Went Wrong", err.message);
+                        });
+                    } else {
+                        generateModal("List Already Exists", "You already own a list with that name!");
+                    }
                 }
-            } else
-                generateModal("No List Name","List name cannot be blank!")
-        }}>
-        <Row>
-            <Col xs={10}>
-                <Form.Control type="text" placeholder="New list name" size='lg' value={newNameOfList} onChange={(e)=>{
-                    setNewNameOfList(e.target.value)
-                }}/>
-            </Col>
-            <Col>
-            <Button variant="primary" type="submit">OK</Button>
-            </Col>
-        </Row>
-        </Form>
-            </>
-        }
-        />
+                else
+                    generateModal("No List Name", "List name cannot be blank!");
+            } }>
+                <Row>
+                    <Col xs={10}>
+                        <Form.Control type="text" placeholder="New list name" size='lg' value={newNameOfList} onChange={(e) => {
+                            setNewNameOfList(e.target.value);
+                        } } />
+                    </Col>
+                    <Col>
+                        <Button variant="primary" type="submit">OK</Button>
+                    </Col>
+                </Row>
+            </Form>
+        </>}/>
     <h1>My Job Lists</h1>
     <p className="mini">Currently signed in as {user.email}, <button className="link" type="button" onClick={()=>{
         signOut(auth)
@@ -143,7 +151,7 @@ export default function MyLists({auth, user, db}){
         e.preventDefault()
         if(newListName.length>0){
             if(userLists==null || !(newListName in userLists)){
-                const updates={}
+                const updates: DatabaseUpdates={}
                 updates['users/'+user.displayName+'/listNames/'+newListName]=Date.now()
                 updates['users/'+user.displayName+'/listItems/'+newListName]=0
                 update(ref(db), updates).then(()=>{

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, SetStateAction } from "react";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
@@ -6,12 +6,12 @@ import {firebase} from '../firebase'
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, updateProfile } from "firebase/auth";
 import { getDatabase, ref, set, get } from "firebase/database";
 
-import ModalPopup from "../components/modal";
+import ModalPopup from "./modal";
 
 import '../styles/profile.css'
 
 export default function Login(){
-    const [username, setUsername] = useState()
+    const [username, setUsername] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [loginState, toggleLoginState] = useState(true)
@@ -29,15 +29,15 @@ export default function Login(){
         document.title = 'Login';
     },[])
 
-    function checkForStrongPassword(password){
+    function checkForStrongPassword(password: string){
         return password.length >= 8 && /[A-Z]/.test(password) && /[a-z]/.test(password) && /[0-9]/.test(password)
     }
 
-    function checkForValidEmail(email){
+    function checkForValidEmail(email: string){
         return email.split("@").length===2 && email.split("@")[1].split(".").length===2
     }
 
-    function checkForValidUsername(username){
+    function checkForValidUsername(username: string){
         return username.match("^[A-Za-z0-9]+$");
     }
 
@@ -67,7 +67,11 @@ export default function Login(){
                                     updateProfile(user, {
                                         displayName: username.toLowerCase()
                                     }).then(()=>{
-                                        set(ref(db, 'username/'+username),user.email)
+                                        console.log(user)
+                                        set(ref(db, 'usernames/'+user.displayName), email)
+                                    }).catch((error) => {
+                                        const errorMessage = error.message;
+                                        console.log(errorMessage)
                                     })
                                 })
                                 .catch((error) => {
@@ -88,7 +92,7 @@ export default function Login(){
         }     
     }
 
-    function generateModal(header, body){
+    function generateModal(header: SetStateAction<string>, body: SetStateAction<string>){
         setModalHeader(header)
         setModalText(body)
         toggleGeneralModal(true)
@@ -155,27 +159,27 @@ export default function Login(){
                 {
                     !loginState?
                     <Form.Group>
-                        <Form.Label for="username" size="lg">Username</Form.Label>
-                        <Form.Control className="login" value={username} type="text" name="username" id="confirm" placeholder="enter a username" size="lg" onChange={(e) => {
+                        <Form.Label size="lg">Username</Form.Label>
+                        <Form.Control className="login" value={username} type="text" name="username" id="username" placeholder="enter a username" size="lg" onChange={(e) => {
                             setUsername(e.target.value)
                         }} />
                     </Form.Group>:<></>
                 }
                 <Form.Group>
-                    <Form.Label for="email" size="lg">Email</Form.Label>
+                    <Form.Label size="lg">Email</Form.Label>
                     <Form.Control className="login" type="email" name="email" id="email" value={email} placeholder="email@example.com" size="lg" onChange={(e) => {
                         setEmail(e.target.value)
                     }}/>
                 </Form.Group>
                 <Form.Group>
-                    <Form.Label for="password" size="lg">Password</Form.Label>
+                    <Form.Label size="lg">Password</Form.Label>
                     <Form.Control className="login" type="password" name="password" id="password" placeholder="enter password" size="lg" onChange={(e) => {
                         setPassword(e.target.value)
                     }} />
                     {
                         !loginState?
                         <div>
-                            <Form.Label for="Confirm Password" size="lg">Confirm Password</Form.Label>
+                            <Form.Label size="lg">Confirm Password</Form.Label>
                             <Form.Control className="login" value={confirmPassword} type="password" name="Confirm Password" id="confirm" placeholder="re-enter password" size="lg" onChange={(e) => {
                                 setConfirmedPassword(e.target.value)
                             }} />

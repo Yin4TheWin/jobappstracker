@@ -1,3 +1,11 @@
+canvas{
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  z-index: -1;
+}
+
 .header {
   display: flex;
   flex-direction: column;
@@ -9,6 +17,7 @@
 
 .content-container{
   width: 75vw;
+  align-self: center;
 }
 
 .logo {
