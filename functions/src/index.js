@@ -1,4 +1,4 @@
-const { onRequest } = require("firebase-functions/v2/https");
+const { onRequest } = require("firebase-functions/v1/https");
 
 const admin = require("firebase-admin");
 admin.initializeApp();
@@ -19,16 +19,18 @@ exports.createaccount = onRequest({cors: [/jobappstracker\.com$/]}, (request, re
     const email=request.query.email;
     const username=request.query.username;
     const password=request.query.password;
-    if(!checkForStrongPassword(password)){
-        response.status(400).json({error: "Password must be at least 8 characters long and contain an uppercase letter, lowercase letter and number"});
+    if(!email||!username||!password)
+        response.status(400).send({error: "Requires email, username and password"});
+    else if(!checkForStrongPassword(password)){
+        response.status(400).send({error: "Password must be at least 8 characters long and contain an uppercase letter, lowercase letter and number"});
     } else if(!checkForValidEmail(email)){
-        response.status(400).json({error: "Please enter a valid email!"});
+        response.status(400).send({error: "Please enter a valid email!"});
     } else if(!checkForValidUsername(username)){
-        response.status(400).json({error: "Username must be non-empty and only contain letters or numbers"});
+        response.status(400).send({error: "Username must be non-empty and only contain letters or numbers"});
     } else{
         admin.database().ref(`usernames/${username}`).get().then((snapshot)=>{
             if(snapshot.exists()){
-                response.status(400).json({error: "Sorry, but an account already exists with this username!"});
+                response.status(400).send({error: "Sorry, but an account already exists with this username!"});
             } else{
                 admin.auth().createUser({
                     email: email,
@@ -36,14 +38,14 @@ exports.createaccount = onRequest({cors: [/jobappstracker\.com$/]}, (request, re
                     displayName: username
                 }).then((user)=>{
                     admin.database().ref(`usernames/${username}`).set(user.email).then(()=>{
-                        response.status(200).json({message: "Your account has been created! You may now log in with your new credentials."});
+                        response.status(200).send({message: "Your account has been created! You may now log in with your new credentials."});
                     });
                 }).catch((error)=>{
-                    response.status(500).json({error: error.message})
+                    response.status(500).send({error: error.message})
                 });
             }
         }).catch(error=>{
-            response.status(500).json({error: error.message});
+            response.status(500).send({error: error.message});
         });
     }
 });
