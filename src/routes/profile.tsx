@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react'
 
 import {firebase} from '../firebase'
-import { getAuth, onAuthStateChanged, User } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getDatabase } from "firebase/database";
 
 import SiteNavbar from './navbar';

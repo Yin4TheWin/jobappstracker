@@ -1,4 +1,4 @@
-import { ReactNode, SetStateAction } from 'react';
+import { ReactNode } from 'react';
 import Modal from 'react-bootstrap/Modal';
 
 interface ModalProps{

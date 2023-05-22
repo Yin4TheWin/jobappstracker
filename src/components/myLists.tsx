@@ -88,7 +88,7 @@ export default function MyLists({auth, user, db}: MyListProps){
                 <Button onClick={()=>{
                     const updates: DatabaseUpdates={}
                     updates['users/'+user.displayName+'/listNames/'+selectedListItem.val]={}
-                    updates['users/'+user.displayName+'/listItems/'+selectedListItem.val]={}
+                    updates['users/'+user.displayName+'/listVals/'+selectedListItem.val]={}
                     update(ref(db), updates).then(()=>{
                         setShowDeleteModal(!showDeleteModal)
                     })
@@ -106,14 +106,14 @@ export default function MyLists({auth, user, db}: MyListProps){
                 e.preventDefault();
                 if (newNameOfList.length > 0) {
                     if (userLists == null || !(newNameOfList in userLists)) {
-                        get(ref(db, 'users/' + user.displayName + '/listItems/' + selectedListItem.val)).then((snapshot) => {
+                        get(ref(db, 'users/' + user.displayName + '/listVals/' + selectedListItem.val)).then((snapshot) => {
                             const updates: DatabaseUpdates = {};
 
                             updates['users/' + user.displayName + '/listNames/' + selectedListItem.val] = {};
                             updates['users/' + user.displayName + '/listNames/' + newNameOfList] = Date.now();
 
-                            updates['users/' + user.displayName + '/listItems/' + selectedListItem.val] = {};
-                            updates['users/' + user.displayName + '/listItems/' + newNameOfList] = snapshot.val();
+                            updates['users/' + user.displayName + '/listVals/' + selectedListItem.val] = {};
+                            updates['users/' + user.displayName + '/listVals/' + newNameOfList] = snapshot.val();
 
                             update(ref(db), updates).then(() => {
                                 setShowEditModal(!showEditModal);
@@ -153,7 +153,7 @@ export default function MyLists({auth, user, db}: MyListProps){
             if(userLists==null || !(newListName in userLists)){
                 const updates: DatabaseUpdates={}
                 updates['users/'+user.displayName+'/listNames/'+newListName]=Date.now()
-                updates['users/'+user.displayName+'/listItems/'+newListName]=0
+                updates['users/'+user.displayName+'/listVals/'+newListName]={private: false}
                 update(ref(db), updates).then(()=>{
                     setNewListName("")
                     generateModal("List Was Created", newListName+" was successfully created! You may now access it under the \"My Lists\" table.")

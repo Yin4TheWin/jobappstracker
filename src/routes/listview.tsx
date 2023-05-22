@@ -9,7 +9,7 @@ import SiteNavbar from "./navbar"
 
 export default function ListView(){
     const {username, listId} = useParams()
-    const userListRef='users/'+username+'/listItems/'+listId
+    const userListRef='users/'+username+'/listVals/'+listId
     const initialVal = useLoaderData()
     const [listItems, setListItems] = useState(initialVal)
     const [db] = useState(getDatabase(firebase))
