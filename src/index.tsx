@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import {
@@ -14,38 +13,48 @@ import ListView from './routes/listview';
 import {firebase} from './firebase'
 import { getDatabase, ref, get } from "firebase/database";
 
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
+import CircuitCanvas from './routes/circuit';
+
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Root/>,
+    element: <CircuitCanvas/>,
+    children: [
+      {
+        path: "",
+        element: <Root/>
+      },
+      {
+        path:"profile",
+        element: <Profile/>
+      },
+      {
+        path: ":username/:listId",
+        element: <ListView/>,
+        loader: async ({params})=>{
+          const db = getDatabase(firebase);
+          const username=params.username?params.username.toLowerCase():"null"
+          const listId=params.listId?params.listId.toLowerCase():"null"
+          const snapshot = await get(ref(db, 'users/'+username+'/listVals/'+listId)).then(s=>{
+            return s.exists()?s.val():null
+          }).catch(()=>{return null})
+          return snapshot
+        }
+      }
+    ],
     errorElement: <Navigate to ="/"/>
   },
-  {
-    path:"/profile",
-    element: <Profile/>
-  },
-  {
-    path: ":username/:listId",
-    element: <ListView/>,
-    loader: async ({params})=>{
-      const db = getDatabase(firebase);
-      const username=params.username?params.username.toLowerCase():"null"
-      const listId=params.listId?params.listId.toLowerCase():"null"
-      const snapshot = await get(ref(db, 'users/'+username+'/listVals/'+listId)).then(s=>{
-        return s.exists()?s.val():null
-      }).catch(()=>{return null})
-      return snapshot
-    }
-  }
 ]);
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
-  <React.StrictMode>
     <RouterProvider router={router} />
-  </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

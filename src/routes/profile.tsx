@@ -5,8 +5,8 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getDatabase } from "firebase/database";
 
 import SiteNavbar from './navbar';
-import Login from '../components/login'
-import MyLists from '../components/myLists';
+import Login from '../components/Login'
+import MyLists from '../components/MyLists';
 
 import '../styles/profile.css'
 
@@ -26,7 +26,7 @@ export default function Profile(){
     }, [user, auth]);
 
     return (
-        <div className="background">
+        <div>
             <SiteNavbar/>
             {user?<MyLists auth={auth} user={user} db={db}/>:<Login/>}
         </div>
