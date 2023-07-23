@@ -1,5 +1,5 @@
 //@ts-ignore
-import init from 'https://dynamiccircuit.kihtrak.com/dynamic-circuit.js';
+import init from 'dynamic-circuit/dynamic-circuit.js';
 import { useEffect } from 'react';
 import { Outlet } from "react-router-dom";
 

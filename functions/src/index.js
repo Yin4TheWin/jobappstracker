@@ -1,5 +1,11 @@
 const { onRequest } = require("firebase-functions/v1/https");
 
+const express = require('express');
+const cors = require('cors');
+
+const app = express();
+app.use(cors({ origin: true }));
+
 const admin = require("firebase-admin");
 admin.initializeApp();
 
@@ -15,7 +21,7 @@ function checkForValidUsername(username){
     return username.match("^[A-Za-z0-9]+$");
 }
 
-exports.createaccount = onRequest({cors: [/jobappstracker\.com$/]}, (request, response) => {
+app.post('/createaccount', (request, response) => {
     const email=request.query.email;
     const username=request.query.username;
     const password=request.query.password;
@@ -49,3 +55,5 @@ exports.createaccount = onRequest({cors: [/jobappstracker\.com$/]}, (request, re
         });
     }
 });
+
+exports.widgets = onRequest(app);

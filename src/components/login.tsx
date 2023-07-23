@@ -2,10 +2,10 @@ import { useState, useEffect, SetStateAction } from "react";
 import Button from '@mui/material/Button';
 import Box from "@mui/material/Box";
 import TextField from '@mui/material/TextField';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 import {firebase} from '../firebase'
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, updateProfile } from "firebase/auth";
-import { getDatabase, ref, set, get } from "firebase/database";
+import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 
 import ModalPopup from "./ModalPoup";
 
@@ -23,26 +23,20 @@ export default function Login(){
     const [generalModalText, setModalText] = useState("")
     const [generalModalHeader, setModalHeader] = useState("")
 
+    const [showLoading, toggleLoading] = useState(false)
+
     const [auth] = useState(getAuth(firebase));
-    const [db] = useState(getDatabase(firebase));
 
     useEffect(()=>{
         document.title = 'Login';
     },[])
 
-    function checkForStrongPassword(password: string){
-        return password.length >= 8 && /[A-Z]/.test(password) && /[a-z]/.test(password) && /[0-9]/.test(password)
-    }
-
     function checkForValidEmail(email: string){
         return email.split("@").length===2 && email.split("@")[1].split(".").length===2
     }
 
-    function checkForValidUsername(username: string){
-        return username.match("^[A-Za-z0-9]+$");
-    }
-
     function handleAuthentication(){
+        toggleLoading(true)
         if(loginState) {
             signInWithEmailAndPassword(auth, email, password)
             .then(() => {
@@ -56,39 +50,19 @@ export default function Login(){
             if(password !== confirmPassword)
                 generateModal("Passwords Don't Match!", "Please ensure \"Password\" and \"Confirm password\" fields are the same.")
             else {
-                if(checkForStrongPassword(password)) {
-                    if(checkForValidUsername(username)){
-                        get(ref(db,'usernames/'+username.toLowerCase())).then((snapshot)=>{
-                            if(snapshot.exists()){
-                                generateModal("Username Taken", "Sorry, but an account already exists with this username!")
-                            } else {
-                                createUserWithEmailAndPassword(auth, email, password)
-                                .then((userCredential) => {
-                                    const user=userCredential.user;
-                                    updateProfile(user, {
-                                        displayName: username.toLowerCase()
-                                    }).then(()=>{
-                                        console.log(user)
-                                        set(ref(db, 'usernames/'+user.displayName), email)
-                                    }).catch((error) => {
-                                        const errorMessage = error.message;
-                                        console.log(errorMessage)
-                                    })
-                                })
-                                .catch((error) => {
-                                    const errorMessage = error.message;
-                                    generateModal("Sign Up Failed", errorMessage)
-                                })
-                            }
-                        }).catch(error=>{
-                            const errorMessage = error.message;
-                            generateModal("Sign Up Failed", errorMessage)
-                        })
-                    } else
-                        generateModal("Bad Username", "Username must exist and contain only letters and numbers.")   
-                }
-                else
-                    generateModal("Password Not Secure!", "Please ensure your password is at least eight characters long and contains at least one uppercase letter, one lowercase letter, and one number.")
+                fetch(`https://us-central1-jobappstracker-ae42a.cloudfunctions.net/widgets/createaccount?username=${username}&email=${email}&password=${password}`, {
+                    method: "POST",
+                }).then((response)=>{
+                    return response.json()
+                }).then(status=>{
+                    if(status.error)
+                        generateModal("Signup Failed", status.error)
+                    else
+                        signInWithEmailAndPassword(auth, email, password)
+                })
+                .catch(()=>{
+                    generateModal("Signup Failed", "Something went wrong. Please try again later.")
+                })
             }   
         }     
     }
@@ -123,6 +97,7 @@ export default function Login(){
                     id="email"
                     label="Email"
                     type="email"
+                    fullWidth
                     value={email}
                     onChange={(e) => {
                         setEmail(e.target.value)
@@ -146,17 +121,23 @@ export default function Login(){
                 <Button color="secondary" onClick={()=>{toggleModal(!showForgotPasswordModal)}}>Cancel</Button>
             </div>
             }/>
-            <ModalPopup showModal={showGeneralModal} toggleModal={()=>{toggleGeneralModal(!showGeneralModal)}}
+            <ModalPopup showModal={showGeneralModal} toggleModal={()=>{
+                toggleGeneralModal(!showGeneralModal)
+                toggleLoading(false)}}
              header={generalModalHeader} 
              body={<div>
                 <p>{generalModalText}</p>
             </div>
             }
             footer={<div>
-                <Button color="primary" onClick={()=>{toggleGeneralModal(!showGeneralModal)}}>OK</Button>
+                <Button color="primary" onClick={()=>{
+                    toggleGeneralModal(!showGeneralModal)
+                    toggleLoading(false)
+                }}>OK</Button>
             </div>
             }/>
             <h1>{loginState?"Log In":"Sign Up"}</h1>
+            <p className="emphasize">{loginState?"Welcome back! Your job lists have been waiting for you.":"Welcome! You're one step away from organizing your job search."}</p>
             <p style={{textAlign:'center'}}>{loginState?"Don't have an account?":"Already have an account?"} <button className="link" onClick={() =>{ 
                 toggleLoginState(!loginState) }}>Click here</button> to {loginState?"sign up":"log in"}</p>  
             <Box
@@ -222,7 +203,7 @@ export default function Login(){
                             toggleModal(true)
                         }}>Click here.</button>    
                     </p>
-                <Button variant="contained" type="submit" size="large" color="primary" className="center">{loginState?"Log In":"Sign Up"}</Button>
+                <LoadingButton loading={showLoading} variant="contained" type="submit" size="large" color="primary" className="center">{loginState?"Log In":"Sign Up"}</LoadingButton>
             </Box>
         </div>
     )

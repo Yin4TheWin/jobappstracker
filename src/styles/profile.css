@@ -3,7 +3,6 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-size: calc(10px + 2vmin);
     margin-top: 2%;
   }
 
@@ -25,6 +24,7 @@
 
   .login {
     width: 80vw !important;
+    background-color: white;
   }
 
   .mylists-header {
@@ -39,6 +39,10 @@
   p.mini{
     font-size: 0.75em;
     color: gray;
+    margin-bottom: 0.1em;
+  }
+  p.emphasize{
+    font-size: 1.3em;
     margin-bottom: 0.1em;
   }
 
