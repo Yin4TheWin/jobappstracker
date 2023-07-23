@@ -17,12 +17,13 @@ export default function Profile(){
 
     useEffect(()=>{
         onAuthStateChanged(auth, (newUser) => {
-            if (newUser) {
-              setUser(newUser)
-            } else {
-              setUser(null)
-            }
-          });
+          localStorage.setItem('auth', newUser?newUser.uid:"");
+          if (newUser) {
+            setUser(newUser)
+          } else {
+            setUser(null)
+          }
+        });
     }, [user, auth]);
 
     return (

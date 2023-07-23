@@ -3,26 +3,30 @@ import { useEffect, useState } from "react"
 import { Table } from "react-bootstrap"
 import { useLoaderData, useParams } from "react-router-dom"
 import { firebase } from "../firebase"
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 import '../styles/listview.css'
 import SiteNavbar from "./navbar"
+import { getAuth } from "firebase/auth"
 
 export default function ListView(){
     const {username, listId} = useParams()
     const userListRef='users/'+username+'/listVals/'+listId
-    const initialVal = useLoaderData()
-    const [listItems, setListItems] = useState(initialVal)
+    const [listItems, setListItems] = useState(null)
     const [db] = useState(getDatabase(firebase))
 
+    const [user] = useAuthState(getAuth(firebase));
+
     useEffect(()=>{
-        onValue(ref(db, userListRef), (snapshot)=>{
-            if(snapshot.exists()){
-                setListItems(snapshot.val())
-             } else{
-                setListItems(null)
-             }
-        })
-    }, [db, userListRef])
+        if(user)
+            onValue(ref(db, userListRef), (snapshot)=>{
+                if(snapshot.exists()){
+                    setListItems(snapshot.val())
+                } else{
+                    setListItems(null)
+                }
+            })
+    }, [db, userListRef, user])
     
     return (
     <>

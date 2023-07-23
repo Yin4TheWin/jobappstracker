@@ -34,16 +34,7 @@ const router = createBrowserRouter([
       },
       {
         path: ":username/:listId",
-        element: <ListView/>,
-        loader: async ({params})=>{
-          const db = getDatabase(firebase);
-          const username=params.username?params.username.toLowerCase():"null"
-          const listId=params.listId?params.listId.toLowerCase():"null"
-          const snapshot = await get(ref(db, 'users/'+username+'/listVals/'+listId)).then(s=>{
-            return s.exists()?s.val():null
-          }).catch(()=>{return null})
-          return snapshot
-        }
+        element: <ListView/>
       }
     ],
     errorElement: <Navigate to ="/"/>
