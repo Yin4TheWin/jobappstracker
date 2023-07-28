@@ -29,7 +29,11 @@ export default function Profile(){
     return (
         <div>
             <SiteNavbar/>
-            {user?<MyLists auth={auth} user={user} db={db}/>:<Login/>}
+            {
+            localStorage.getItem('auth')!==null && localStorage.getItem('auth')!.length>0 ?
+            <MyLists auth={auth} user={user} db={db}/>:
+            <Login/>
+            }
         </div>
     )
 }

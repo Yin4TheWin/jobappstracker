@@ -8,48 +8,47 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import '../styles/listview.css'
 import SiteNavbar from "./navbar"
 import { getAuth } from "firebase/auth"
+import InvalidList from "../components/ListView/InvalidList"
+import { Grid, Skeleton } from "@mui/material"
+import ListSkeleton from "../components/ListView/ListSkeleton"
+import JobList from "../components/ListView/JobList"
 
 export default function ListView(){
     const {username, listId} = useParams()
     const userListRef='users/'+username+'/listVals/'+listId
-    const [listItems, setListItems] = useState(null)
+    const [listItems, setListItems] = useState(useLoaderData())
+    const [loading, setLoading] = useState(true)
     const [db] = useState(getDatabase(firebase))
 
     const [user] = useAuthState(getAuth(firebase));
 
     useEffect(()=>{
-        if(user)
-            onValue(ref(db, userListRef), (snapshot)=>{
-                if(snapshot.exists()){
-                    setListItems(snapshot.val())
-                } else{
-                    setListItems(null)
-                }
-            })
+        onValue(ref(db, userListRef), (snapshot)=>{
+            if(snapshot.exists()){
+                setListItems(snapshot.val())
+            } else{
+                setListItems(null)
+            }
+            if(user)
+                setLoading(false)
+        })
     }, [db, userListRef, user])
     
     return (
     <>
     <SiteNavbar/>
     {
-        listItems==null?
-        <div className="error-header">
-            <h1>Sorry 😢</h1>
-            <p>Either the page you are looking for does not exist, or you are not allowed to view it.</p>
-            <p className="mini">(If you believe this is a mistake, please ensure you are signed in to the right account, then come back to this page.)</p>
-        </div>:
+        ((localStorage.getItem('auth')===null || localStorage.getItem('auth')!.length===0 || !loading) && listItems===null) 
+        && <InvalidList/>
+    }
+    {
+        listItems!==null &&
         <div className="header">
-        <h1>
-            {listId}
-        </h1>
-        <p className="mini">
-            By {username}
-        </p>
-        <Table style={{marginTop: '1%'}} striped hover responsive="sm" size="sm">
-            <th>
-
-            </th>
-        </Table>
+            {
+                (localStorage.getItem('auth')!==null && localStorage.getItem('auth')!.length>0 && listItems===null && loading) ?
+                <ListSkeleton/> :
+                <JobList listId={listId?listId:""} username={username?username:""}/>
+            }
     </div>
     }
     </>)

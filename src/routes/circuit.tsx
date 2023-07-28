@@ -5,12 +5,12 @@ import { Outlet } from "react-router-dom";
 
 export default function CircuitCanvas() {
   useEffect(()=>{
-    init(document.getElementById('circuit'), {strokeWidth: 1, "color": {"r": 210, "g": 220, "b": 230}})
+    init(document.getElementById('circuit'), {strokeWidth: 1, "color": {"r": 230, "g": 230, "b": 240}})
   },[])
   return (
-    <div>
+    <div style={{position: "relative", minHeight:"100vh"}}>
         <canvas id="circuit" ></canvas>
-        <Outlet />
+        <Outlet/>
         <footer style={
           {
             position: 'absolute',

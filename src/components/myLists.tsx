@@ -14,10 +14,11 @@ import { ref, onValue, update, get, Database } from "firebase/database";
 import { Link } from 'react-router-dom';
 
 import { SetStateAction, useEffect, useState } from 'react';
+import { Skeleton, Stack } from '@mui/material';
 
 interface MyListProps{
     auth: Auth,
-    user: User,
+    user: User | null,
     db: Database
 }
 
@@ -26,11 +27,11 @@ interface DatabaseUpdates{
 }
 
 export default function MyLists({auth, user, db}: MyListProps){
+    const [displayName, setDisplayName] = useState("")
     const [newListName, setNewListName] = useState("")
     const [newNameOfList, setNewNameOfList] = useState("")
 
     const [userLists, setUserLists] = useState(null)
-    const [userListsRef]= useState(ref(db, 'users/'+user.displayName+'/listNames'))
     const [selectedListItem, setSelectedListItem] = useState({state: "", val: ""})
 
     const [showModal, setShowModal] = useState(false)
@@ -45,15 +46,22 @@ export default function MyLists({auth, user, db}: MyListProps){
     },[])
 
     useEffect(()=>{
-        onValue(userListsRef, (snapshot)=>{
-            if(snapshot.exists()){
-                const listNames=snapshot.val()
-                setUserLists(listNames)
-             } else{
-                setUserLists(null)
-             }
-        })
-    }, [userListsRef])
+        if(user){
+            setDisplayName(user?.displayName?user.displayName:"")
+        }
+    }, [user, db])
+
+    useEffect(()=>{
+        if(displayName.length>0)
+            onValue(ref(db, 'users/'+displayName+'/listNames'), (snapshot)=>{
+                if(snapshot.exists()){
+                    const listNames=snapshot.val()
+                    setUserLists(listNames)
+                } else{
+                    setUserLists(null)
+                }
+            })
+    }, [displayName, db])
 
     useEffect(()=>{
         if(selectedListItem.state==="delete"){
@@ -87,8 +95,8 @@ export default function MyLists({auth, user, db}: MyListProps){
             <>
                 <Button onClick={()=>{
                     const updates: DatabaseUpdates={}
-                    updates['users/'+user.displayName+'/listNames/'+selectedListItem.val]={}
-                    updates['users/'+user.displayName+'/listVals/'+selectedListItem.val]={}
+                    updates['users/'+displayName+'/listNames/'+selectedListItem.val]={}
+                    updates['users/'+displayName+'/listVals/'+selectedListItem.val]={}
                     update(ref(db), updates).then(()=>{
                         setShowDeleteModal(!showDeleteModal)
                     })
@@ -106,14 +114,14 @@ export default function MyLists({auth, user, db}: MyListProps){
                 e.preventDefault();
                 if (newNameOfList.length > 0) {
                     if (userLists == null || !(newNameOfList in userLists)) {
-                        get(ref(db, 'users/' + user.displayName + '/listVals/' + selectedListItem.val)).then((snapshot) => {
+                        get(ref(db, 'users/' + displayName + '/listVals/' + selectedListItem.val)).then((snapshot) => {
                             const updates: DatabaseUpdates = {};
 
-                            updates['users/' + user.displayName + '/listNames/' + selectedListItem.val] = {};
-                            updates['users/' + user.displayName + '/listNames/' + newNameOfList] = Date.now();
+                            updates['users/' + displayName + '/listNames/' + selectedListItem.val] = {};
+                            updates['users/' + displayName + '/listNames/' + newNameOfList] = Date.now();
 
-                            updates['users/' + user.displayName + '/listVals/' + selectedListItem.val] = {};
-                            updates['users/' + user.displayName + '/listVals/' + newNameOfList] = snapshot.val();
+                            updates['users/' + displayName + '/listVals/' + selectedListItem.val] = {};
+                            updates['users/' + displayName + '/listVals/' + newNameOfList] = snapshot.val();
 
                             update(ref(db), updates).then(() => {
                                 setShowEditModal(!showEditModal);
@@ -143,17 +151,21 @@ export default function MyLists({auth, user, db}: MyListProps){
             </Form>
         </>}/>
     <h1>My Job Lists</h1>
-    <p className="mini">Currently signed in as {user.displayName}, <button className="link" type="button" onClick={()=>{
-        signOut(auth)
-    }}>click here to sign out.</button>  </p>
-    <p>To create a new jobs list, enter a list name (eg: Summer Internships {new Date().getFullYear()}) in the text input field, then hit "Create". To edit a list, click on its name in the table below.</p>
+    {
+        displayName.length>0 ?
+        <p className="mini">Currently signed in as {displayName}, <button className="link" type="button" onClick={()=>{
+            signOut(auth)
+        }}>click here to sign out.</button> </p> :
+        <Skeleton variant="text" sx={{ fontSize: '1rem', width: '50%' }} />
+    }
+    <p>To create a new jobs list, enter a list name (eg: Summer Internships {new Date().getFullYear() + 1}) in the text input field, then hit "Create". To edit a list, click on its name in the table below.</p>
     <Form onSubmit={(e)=>{
         e.preventDefault()
-        if(newListName.length>0){
+        if(newListName.length>0 && displayName.length>0){
             if(userLists==null || !(newListName in userLists)){
                 const updates: DatabaseUpdates={}
-                updates['users/'+user.displayName+'/listNames/'+newListName]=Date.now()
-                updates['users/'+user.displayName+'/listVals/'+newListName]={private: false}
+                updates['users/'+displayName+'/listNames/'+newListName]=Date.now()
+                updates['users/'+displayName+'/listVals/'+newListName]={private: false}
                 update(ref(db), updates).then(()=>{
                     setNewListName("")
                     generateModal("List Was Created", newListName+" was successfully created! You may now access it under the \"My Lists\" table.")
@@ -168,53 +180,61 @@ export default function MyLists({auth, user, db}: MyListProps){
     }}>
         <Row>
             <Col xs={8} md={10}>
-                <Form.Control type="text" placeholder="New list name" size='lg' value={newListName} onChange={(e)=>{
+                <Form.Control type="text" placeholder="New list name" size='lg' disabled={displayName.length===0} value={newListName} onChange={(e)=>{
                     setNewListName(e.target.value)
                 }}/>
             </Col>
             <Col xs={4} md={2}>
-                <Button type='submit' size='lg' style={{width: '100%'}}>Create</Button>
+                <Button disabled={displayName.length===0} type='submit' size='lg' style={{width: '100%'}}>Create</Button>
             </Col>
         </Row>
     </Form>
-    <Table style={{marginTop: '1%'}} striped hover responsive="sm" size="sm">
-      <thead>
-        <tr>
-          <th style={{width: userLists==null?'100%':'95%'}}>My Lists</th>
-          <th/>
-          <th/>
-        </tr>
-      </thead>
-      <tbody>
-        {
-            userLists?Object.entries(userLists).map(list=>{
-                let key=list[0]
-                return (<tr>
-                    <td>
-                        <Link to={"/"+user.displayName+"/"+key}>{key}</Link>
-                    </td>
-                    <td>
-                        <Button variant='secondary' className='edit' onClick={()=>{
-                            setNewNameOfList(key)
-                            setSelectedListItem({state: "edit", val: key})
-                        }}>
-                        <FontAwesomeIcon icon={solid('pen')} />
-                        </Button>
-                    </td>
-                    <td>
-                        <Button variant='secondary' className='edit' onClick={()=>{
-                            setSelectedListItem({state: "delete", val: key})
-                        }}>
-                        <FontAwesomeIcon icon={solid('trash')} />
-                        </Button>
-                    </td>
-                    </tr>)
-            }):
+    {
+        displayName.length>0?
+        <Table style={{marginTop: '1%'}} striped hover responsive="sm" size="sm">
+        <thead>
             <tr>
-                <td>None yet!</td>
+            <th style={{width: userLists==null?'100%':'95%'}}>My Lists</th>
+            <th/>
+            <th/>
             </tr>
-        }
-      </tbody>
-    </Table>
+        </thead>
+        <tbody>
+            {
+                userLists?Object.entries(userLists).map(list=>{
+                    let key=list[0]
+                    return (<tr>
+                        <td>
+                            <Link to={"/"+displayName+"/"+key}>{key}</Link>
+                        </td>
+                        <td>
+                            <Button variant='secondary' className='edit' onClick={()=>{
+                                setNewNameOfList(key)
+                                setSelectedListItem({state: "edit", val: key})
+                            }}>
+                            <FontAwesomeIcon icon={solid('pen')} />
+                            </Button>
+                        </td>
+                        <td>
+                            <Button variant='secondary' className='edit' onClick={()=>{
+                                setSelectedListItem({state: "delete", val: key})
+                            }}>
+                            <FontAwesomeIcon icon={solid('trash')} />
+                            </Button>
+                        </td>
+                        </tr>)
+                }):
+                <tr>
+                    <td>None yet!</td>
+                </tr>
+            }
+        </tbody>
+        </Table>:
+        <Stack spacing={2} sx={{ width: '100%', marginTop: '1%' }}>
+            <Skeleton variant="rounded" width={'100%'} height={60} />
+            <Skeleton variant="rounded" width={'100%'} height={60} />
+            <Skeleton variant="rounded" width={'100%'} height={60} />
+        </Stack>
+    }
     </div>)
 }
