@@ -4,11 +4,11 @@ import {firebase} from '../firebase'
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getDatabase } from "firebase/database";
 
-import SiteNavbar from './navbar';
+import SiteNavbar from './Navbar';
 import Login from '../components/Login'
 import MyLists from '../components/MyLists';
 
-import '../styles/profile.css'
+import '../styles/Profile.css'
 
 export default function Profile(){
     const [auth] = useState(getAuth(firebase));

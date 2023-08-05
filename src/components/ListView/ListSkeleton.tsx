@@ -5,13 +5,16 @@ export default function ListSkeleton(){
     <Skeleton variant="text" width="50%" height="7vh"/>
             <Skeleton variant="text" width="30%" height="5vh"/>
             <Grid container spacing={2} sx={{marginTop: '1%', minHeight: '70vh', marginBottom: '3%'}}>
-                <Grid item xs={12} md={4}>
+                <Grid item xs={6} md={3}>
                     <Skeleton variant="rectangular" width="100%" height="100%"/>
                 </Grid>
-                <Grid item xs={12} md={4}>
+                <Grid item xs={6} md={3}>
                     <Skeleton variant="rectangular" width="100%" height="100%"/>
                 </Grid>
-                <Grid item xs={12} md={4}>
+                <Grid item xs={6} md={3}>
+                    <Skeleton variant="rectangular" width="100%" height="100%"/>
+                </Grid>
+                <Grid item xs={6} md={3}>
                     <Skeleton variant="rectangular" width="100%" height="100%"/>
                 </Grid>
             </Grid>

@@ -5,19 +5,16 @@ import {
   RouterProvider,
   Navigate
 } from "react-router-dom";
-import Root from './routes/root'
+import Root from './routes/Root'
 import reportWebVitals from './reportWebVitals';
-import Profile from './routes/profile';
-import ListView from './routes/listview';
-
-import {firebase} from './firebase'
-import { getDatabase, ref, get } from "firebase/database";
+import Profile from './routes/Profile';
+import ListView from './routes/ListView';
 
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
-import CircuitCanvas from './routes/circuit';
+import CircuitCanvas from './routes/Circuit';
 
 const router = createBrowserRouter([
   {
@@ -35,15 +32,6 @@ const router = createBrowserRouter([
       {
         path: ":username/:listId",
         element: <ListView/>,
-        loader: async ({params})=>{
-          const db = getDatabase(firebase);
-          const username=params.username?params.username.toLowerCase():"null"
-          const listId=params.listId?params.listId.toLowerCase():"null"
-          const snapshot = await get(ref(db, 'users/'+username+'/listVals/'+listId)).then(s=>{
-            return s.exists()?s.val():null
-          }).catch(()=>{return null})
-          return snapshot
-        }
       }
     ],
     errorElement: <Navigate to ="/"/>

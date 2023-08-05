@@ -1,15 +1,13 @@
-import { onValue, ref, getDatabase } from "firebase/database"
+import { onValue, ref, getDatabase, off } from "firebase/database"
 import { useEffect, useState } from "react"
-import { Table } from "react-bootstrap"
 import { useLoaderData, useParams } from "react-router-dom"
 import { firebase } from "../firebase"
 import { useAuthState } from 'react-firebase-hooks/auth';
 
-import '../styles/listview.css'
-import SiteNavbar from "./navbar"
+import '../styles/ListView.css'
+import SiteNavbar from "./Navbar"
 import { getAuth } from "firebase/auth"
 import InvalidList from "../components/ListView/InvalidList"
-import { Grid, Skeleton } from "@mui/material"
 import ListSkeleton from "../components/ListView/ListSkeleton"
 import JobList from "../components/ListView/JobList"
 
@@ -29,27 +27,31 @@ export default function ListView(){
             } else{
                 setListItems(null)
             }
-            if(user)
+            if(user || localStorage.getItem('auth')===null || localStorage.getItem('auth')!.length===0)
+                setLoading(false)
+        }, error=>{
+            setListItems(null)
+            if(user || localStorage.getItem('auth')===null || localStorage.getItem('auth')!.length===0)
                 setLoading(false)
         })
+        return ()=>{
+            off(ref(db, userListRef))
+        }
     }, [db, userListRef, user])
     
     return (
     <>
     <SiteNavbar/>
     {
-        ((localStorage.getItem('auth')===null || localStorage.getItem('auth')!.length===0 || !loading) && listItems===null) 
-        && <InvalidList/>
-    }
-    {
-        listItems!==null &&
+        (!loading && listItems===null) 
+        ? <InvalidList/> :
         <div className="header">
             {
-                (localStorage.getItem('auth')!==null && localStorage.getItem('auth')!.length>0 && listItems===null && loading) ?
+                (loading) ?
                 <ListSkeleton/> :
                 <JobList listId={listId?listId:""} username={username?username:""}/>
             }
-    </div>
+        </div>
     }
     </>)
 }

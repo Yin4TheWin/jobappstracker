@@ -9,7 +9,7 @@ import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "fir
 
 import ModalPopup from "./ModalPoup";
 
-import '../styles/profile.css'
+import '../styles/Profile.css'
 
 export default function Login(){
     const [username, setUsername] = useState("")

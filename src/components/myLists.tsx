@@ -9,12 +9,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro' 
 
 import { Auth, signOut, User } from "firebase/auth"
-import { ref, onValue, update, get, Database } from "firebase/database";
+import { ref, onValue, update, get, Database, off } from "firebase/database";
 
 import { Link } from 'react-router-dom';
 
 import { SetStateAction, useEffect, useState } from 'react';
 import { Skeleton, Stack } from '@mui/material';
+
 
 interface MyListProps{
     auth: Auth,
@@ -52,15 +53,17 @@ export default function MyLists({auth, user, db}: MyListProps){
     }, [user, db])
 
     useEffect(()=>{
-        if(displayName.length>0)
-            onValue(ref(db, 'users/'+displayName+'/listNames'), (snapshot)=>{
-                if(snapshot.exists()){
-                    const listNames=snapshot.val()
-                    setUserLists(listNames)
-                } else{
-                    setUserLists(null)
-                }
-            })
+        onValue(ref(db, 'users/'+displayName+'/listNames'), (snapshot)=>{
+            if(snapshot.exists()){
+                const listNames=snapshot.val()
+                setUserLists(listNames)
+            } else{
+                setUserLists(null)
+            }
+        })
+        return ()=>{
+            off(ref(db, 'users/'+displayName+'/listNames'))
+        }
     }, [displayName, db])
 
     useEffect(()=>{
