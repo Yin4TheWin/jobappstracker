@@ -4,13 +4,13 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 
-export default function MediaCard({imageLink, title, description}: {imageLink: string, title: string, description: string}) {
+export default function MediaCard({imageLink, title, description, alt}: {imageLink: string, title: string, description: string, alt: string}) {
   return (
     <Card sx={{ maxWidth: 345 }}>
       <CardMedia
         sx={{ height: 140 }}
         image={imageLink}
-        title="green iguana"
+        title={alt}
       />
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">

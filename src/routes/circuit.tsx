@@ -9,7 +9,7 @@ export default function CircuitCanvas() {
   },[])
   return (
     <div style={{position: "relative", minHeight:"100vh"}}>
-        <canvas id="circuit" ></canvas>
+        <canvas id="circuit"></canvas>
         <Outlet/>
         <footer style={
           {
