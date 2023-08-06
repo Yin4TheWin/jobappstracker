@@ -203,7 +203,7 @@ export default function Login(){
                             toggleModal(true)
                         }}>Click here.</button>    
                     </p>
-                <LoadingButton loading={showLoading} variant="contained" type="submit" size="large" color="primary" className="center">{loginState?"Log In":"Sign Up"}</LoadingButton>
+                <LoadingButton loading={showLoading} variant="contained" type="submit" size="large" color="primary" className="center">Submit</LoadingButton>
             </Box>
         </div>
     )
