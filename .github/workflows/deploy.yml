@@ -5,7 +5,7 @@ name: Deploy to Firebase Hosting on tests pass
 on:
   workflow_run:
       workflows: [Node.js CI]
-      branches: [main]
+      branches: [main, develop]
       types:
         - completed
 jobs:
