@@ -13,12 +13,12 @@ export default function CircuitCanvas() {
         <Outlet/>
         <footer style={
           {
-            position: 'absolute',
+            position: 'relative',
             bottom: '0px',
             left: '0px',
             width: '100%',
             textAlign: 'center',
-            fontSize: '0.9em'
+            fontSize: '0.9em',
           }
         }>
           <p style={{color: 'black'}}>Background Image Attribution: <a target="_blank" rel="noopener noreferrer" href="https://dynamiccircuit.kihtrak.com/">Dynamic Circuit by Karthik Sankar</a></p>

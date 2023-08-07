@@ -15,9 +15,12 @@
     text-align: left;
   }
 
+  p.mini.center{
+    text-align: center;
+  }
+  
   p.mini.bold{
     color: rgb(79, 78, 78);
-    text-align: left;
     font-weight: bold;
   }
 
