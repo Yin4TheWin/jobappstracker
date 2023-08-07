@@ -8,7 +8,7 @@ import {
 import Root from './routes/Root'
 import reportWebVitals from './reportWebVitals';
 import Profile from './routes/Profile';
-import ListView from './routes/ListView';
+import ListView from './routes/JobListView';
 
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';

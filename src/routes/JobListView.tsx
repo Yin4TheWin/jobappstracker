@@ -4,7 +4,7 @@ import { useLoaderData, useParams } from "react-router-dom"
 import { firebase } from "../firebase"
 import { useAuthState } from 'react-firebase-hooks/auth';
 
-import '../styles/ListView.css'
+import '../styles/JobListView.css'
 import SiteNavbar from "./Navbar"
 import { getAuth } from "firebase/auth"
 import InvalidList from "../components/ListView/InvalidList"

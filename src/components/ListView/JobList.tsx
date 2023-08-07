@@ -1,11 +1,28 @@
-import { Grid, Stack, Switch } from "@mui/material";
+import { Button, Grid, Stack, Switch } from "@mui/material";
 import { User } from "firebase/auth";
 import togglePrivacy from "../../functions/togglePrivacy";
 import CategoryCard from "./CategoryCard";
+import ModalPopup from "../ModalPoup";
+import JobAppForm from "./JobAppForm";
+import { useState } from "react";
 
 export default function JobList({listId, username, user, isPrivate}: {listId: string, username: string, user: User|null|undefined, isPrivate: boolean}){
+    const [showJobAppModal, toggleJobAppModal] = useState({value: false, data: {}});
     const isOwner = (user && user.displayName === username)
+    const jobCategories = [{name: "Applied", color: "#688aad"}, {name: "Interviewing", color: "#b5b36e"}, {name: "Rejected", color: "#b06b76"}, {name: "Offered", color: "#6bb081"}]
     return (<>
+        <ModalPopup
+        showModal={showJobAppModal.value}
+        toggleModal={()=>toggleJobAppModal({value: !showJobAppModal.value, data: showJobAppModal.data})}
+        header={""}
+        body={<JobAppForm/>}
+        footer={<div>
+            <Button color="primary" onClick={()=>{
+            }}>Submit</Button>{' '}
+            <Button color="secondary" onClick={()=>{toggleJobAppModal({value: !showJobAppModal.value, data: showJobAppModal.data})}}>Cancel</Button>
+        </div>
+        }
+        />
         <h1>
             {listId}
         </h1>
@@ -33,19 +50,14 @@ export default function JobList({listId, username, user, isPrivate}: {listId: st
         </Stack>
         }
         <p className="mini">{isOwner ? "Click the \"plus\" icon under any category to add a job to that category, click a job title to view/edit details for that job, or drag and drop job cards between panels to organize them.":"Click a job title to view more information about that job."}</p>
-        <Grid container spacing={2} sx={{marginTop: '1%', minHeight: '70vh', marginBottom: '3%'}}>
-            <Grid item xs={6} md={3}>
-                <CategoryCard title="Applied" titleColor="#688aad" isOwner={isOwner}/>
-            </Grid>
-            <Grid item xs={6} md={3}>
-                <CategoryCard title="Interviewing" titleColor="#b5b36e" isOwner={isOwner}/>
-            </Grid>
-            <Grid item xs={6} md={3}>
-                <CategoryCard title="Rejected" titleColor="#b06b76" isOwner={isOwner}/>
-            </Grid>
-            <Grid item xs={6} md={3}>
-                <CategoryCard title="Accepted" titleColor="#6bb081" isOwner={isOwner}/>
-            </Grid>
+        <Grid container spacing={2} sx={{marginTop: '1%', minHeight: '70vh'}}>
+            {
+                jobCategories.map((category)=>{
+                    return <Grid item xs={6} md={3}>
+                        <CategoryCard title={category.name} titleColor={category.color} isOwner={isOwner} toggleModal={toggleJobAppModal}/>
+                    </Grid>
+                })
+            }
         </Grid>
     </>)
 }

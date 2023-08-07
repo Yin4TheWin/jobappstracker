@@ -12,7 +12,7 @@ export default function Root(){
     },[])
 
     return (
-        <div>
+        <div style={{height: '95vh'}}>
             <SiteNavbar/>
             <div className="header">
             <div className="content-container">
