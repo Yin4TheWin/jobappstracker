@@ -11,10 +11,14 @@ import InvalidList from "../components/ListView/InvalidList"
 import ListSkeleton from "../components/ListView/ListSkeleton"
 import JobList from "../components/ListView/JobList"
 
+interface ListItems{
+    private: boolean
+}
+
 export default function ListView(){
     const {username, listId} = useParams()
     const userListRef='users/'+username+'/listVals/'+listId
-    const [listItems, setListItems] = useState(useLoaderData())
+    const [listItems, setListItems] = useState<ListItems|null>(useLoaderData() as ListItems)
     const [loading, setLoading] = useState(true)
     const [db] = useState(getDatabase(firebase))
 
@@ -49,7 +53,7 @@ export default function ListView(){
             {
                 (loading) ?
                 <ListSkeleton/> :
-                <JobList listId={listId?listId:""} username={username?username:""}/>
+                <JobList listId={listId?listId:""} username={username?username:""} user={user} isPrivate={listItems!.private}/>
             }
         </div>
     }
