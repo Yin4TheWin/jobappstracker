@@ -38,7 +38,7 @@ export default function Root(){
                     {" "} an organized job search.</h1>
                 <p>Never lose track of a job application's status or its details ever again.</p>
             </div>
-            <Grid container spacing={2} sx={{marginTop: '1%', height: 'auto', marginBottom: '3%'}}>
+            <Grid container rowSpacing={1} columnSpacing={4} sx={{margin: 'auto', width: 'auto'}}>
                 <Grid item xs={12} md={4}>
                     <MediaCard title="Drag n' Drop" alt="Drag n' Drop" description="Create cards for your job applications, then drag and drop them between four categories: applied, interviewing, rejected, and offer." imageLink="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Frog_on_palm_frond.jpg/1200px-Frog_on_palm_frond.jpg"/>
                 </Grid>
