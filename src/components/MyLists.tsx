@@ -8,20 +8,14 @@ import ModalPopup from "./ModalPoup";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro' 
 
-import { Auth, signOut, User } from "firebase/auth"
-import { ref, onValue, update, get, Database, off } from "firebase/database";
+import { signOut } from "firebase/auth"
+import { ref, onValue, update, get, off } from "firebase/database";
 
 import { Link } from 'react-router-dom';
 
 import { SetStateAction, useEffect, useState } from 'react';
 import { Skeleton, Stack } from '@mui/material';
-
-
-interface MyListProps{
-    auth: Auth,
-    user: User | null,
-    db: Database
-}
+import MyListProps from '../types/MyListProps';
 
 interface DatabaseUpdates{
     [index: string]: any

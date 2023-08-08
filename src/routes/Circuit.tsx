@@ -3,6 +3,9 @@ import init from 'dynamic-circuit/dynamic-circuit.js';
 import { useEffect } from 'react';
 import { Outlet } from "react-router-dom";
 
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+
 export default function CircuitCanvas() {
   useEffect(()=>{
     init(document.getElementById('circuit'), {strokeWidth: 1, "color": {"r": 230, "g": 230, "b": 240}})
@@ -10,7 +13,9 @@ export default function CircuitCanvas() {
   return (
     <div style={{position: "relative", minHeight:"100vh"}}>
         <canvas id="circuit"></canvas>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Outlet/>
+        </LocalizationProvider>
         <footer style={
           {
             position: 'relative',

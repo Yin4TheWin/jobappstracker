@@ -5,17 +5,18 @@ import CategoryCard from "./CategoryCard";
 import ModalPopup from "../ModalPoup";
 import JobAppForm from "./JobAppForm";
 import { useState } from "react";
+import JobAppFields from "../../types/JobAppFields";
 
 export default function JobList({listId, username, user, isPrivate}: {listId: string, username: string, user: User|null|undefined, isPrivate: boolean}){
-    const [showJobAppModal, toggleJobAppModal] = useState({value: false, data: {}});
+    const [showJobAppModal, toggleJobAppModal] = useState<JobAppFields>({value: false, data: {category: "Applied", date: null}});
     const isOwner = (user && user.displayName === username)
     const jobCategories = [{name: "Applied", color: "#688aad"}, {name: "Interviewing", color: "#b5b36e"}, {name: "Rejected", color: "#b06b76"}, {name: "Offered", color: "#6bb081"}]
     return (<>
         <ModalPopup
         showModal={showJobAppModal.value}
         toggleModal={()=>toggleJobAppModal({value: !showJobAppModal.value, data: showJobAppModal.data})}
-        header={""}
-        body={<JobAppForm/>}
+        header={"Job Application Info"}
+        body={<JobAppForm categories={jobCategories} data={showJobAppModal.data}/>}
         footer={<div>
             <Button color="primary" onClick={()=>{
             }}>Submit</Button>{' '}

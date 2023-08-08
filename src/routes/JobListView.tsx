@@ -10,10 +10,7 @@ import { getAuth } from "firebase/auth"
 import InvalidList from "../components/ListView/InvalidList"
 import ListSkeleton from "../components/ListView/ListSkeleton"
 import JobList from "../components/ListView/JobList"
-
-interface ListItems{
-    private: boolean
-}
+import ListItems from "../types/ListItems";
 
 export default function ListView(){
     const {username, listId} = useParams()
