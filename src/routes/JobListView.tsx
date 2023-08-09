@@ -1,7 +1,7 @@
 import { onValue, ref, getDatabase, off } from "firebase/database"
 import { useEffect, useState } from "react"
 import { useLoaderData, useParams } from "react-router-dom"
-import { firebase } from "../firebase"
+import { firebase } from "../globals/firebase"
 import { useAuthState } from 'react-firebase-hooks/auth';
 
 import '../styles/JobListView.css'
@@ -10,12 +10,12 @@ import { getAuth } from "firebase/auth"
 import InvalidList from "../components/ListView/InvalidList"
 import ListSkeleton from "../components/ListView/ListSkeleton"
 import JobList from "../components/ListView/JobList"
-import ListItems from "../types/ListItems";
+import ListItemsTypes from "../globals/types/ListItemsTypes";
 
 export default function ListView(){
     const {username, listId} = useParams()
     const userListRef='users/'+username+'/listVals/'+listId
-    const [listItems, setListItems] = useState<ListItems|null>(useLoaderData() as ListItems)
+    const [listItems, setListItems] = useState<ListItemsTypes|null>(useLoaderData() as ListItemsTypes)
     const [loading, setLoading] = useState(true)
     const [db] = useState(getDatabase(firebase))
 

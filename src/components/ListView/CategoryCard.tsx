@@ -1,9 +1,9 @@
 import { Card, IconButton } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
-import CategoryCardProps from "../../types/CategoryCardProps";
-import JobAppFields from "../../types/JobAppFields";
+import CategoryCardTypes from "../../globals/types/CategoryCardTypes";
+import JobAppFieldsTypes from "../../globals/types/JobAppFieldsTypes";
 
-export default function CategoryCard({title, titleColor, isOwner, toggleModal} : CategoryCardProps){
+export default function CategoryCard({title, titleColor, isOwner, toggleModal} : CategoryCardTypes){
     return (
         <Card variant="outlined" sx={{width: '100%', height: '100%',  backgroundColor: '#f7f7f7', position: 'relative'}}>
             <p className="mini center" style={{color: titleColor, marginTop: '2%'}}>{title}</p>    
@@ -13,7 +13,7 @@ export default function CategoryCard({title, titleColor, isOwner, toggleModal} :
                 right: '0px',
             }}
             onClick={()=>{ 
-                toggleModal((oldData : JobAppFields)=>{return {value: true, data: {...oldData, category: title, color: titleColor}}})
+                toggleModal((oldData : JobAppFieldsTypes)=>{return {value: true, data: {...oldData, category: title, color: titleColor}}})
             }}
             >
                 <AddIcon/> 

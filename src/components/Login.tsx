@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 import TextField from '@mui/material/TextField';
 import LoadingButton from '@mui/lab/LoadingButton';
 
-import {firebase} from '../firebase'
+import {firebase} from '../globals/firebase'
 import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 
 import ModalPopup from "./ModalPoup";

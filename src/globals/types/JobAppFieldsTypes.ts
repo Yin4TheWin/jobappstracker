@@ -1,4 +1,4 @@
-export default interface JobAppFields {
+export default interface JobAppFieldsTypes {
     value: boolean,
     data: {
         category: string,

@@ -1,12 +1,12 @@
 import { DatePicker } from '@mui/x-date-pickers';
 import { Box, Button, Grid, MenuItem, TextField, Typography } from "@mui/material";
 import dayjs from 'dayjs';
-import JobAppFormProps from '../../types/JobAppFormProps';
-import { jobCategories } from '../../globals';
+import JobAppFormTypes from '../../globals/types/JobAppFormTypes';
+import { jobCategories } from '../../globals/globalVariables';
 import { useState } from 'react';
 
 
-export default function JobAppForm({categories, data} : JobAppFormProps){
+export default function JobAppForm({categories, data} : JobAppFormTypes){
     const [selectedCategory, setSelectedCategory] = useState(data.category);
 
     return (

@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react'
 
-import {firebase} from '../firebase'
+import {firebase} from '../globals/firebase'
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getDatabase } from "firebase/database";
 

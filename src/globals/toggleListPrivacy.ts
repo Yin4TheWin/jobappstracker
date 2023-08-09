@@ -1,4 +1,4 @@
-import { firebase } from "../firebase"
+import { firebase } from "./firebase"
 import { ref, getDatabase, set } from "firebase/database"
 
 export default function togglePrivacy(username: string, listId: string, value: boolean){

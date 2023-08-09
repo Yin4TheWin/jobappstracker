@@ -15,13 +15,13 @@ import { Link } from 'react-router-dom';
 
 import { SetStateAction, useEffect, useState } from 'react';
 import { Skeleton, Stack } from '@mui/material';
-import MyListProps from '../types/MyListProps';
+import MyListTypes from '../globals/types/MyListTypes';
 
 interface DatabaseUpdates{
     [index: string]: any
 }
 
-export default function MyLists({auth, user, db}: MyListProps){
+export default function MyLists({auth, user, db}: MyListTypes){
     const [displayName, setDisplayName] = useState("")
     const [newListName, setNewListName] = useState("")
     const [newNameOfList, setNewNameOfList] = useState("")

@@ -1,4 +1,4 @@
-export default interface CategoryCardProps {
+export default interface CategoryCardTypes {
     title: string,
     titleColor: string,
     isOwner: boolean | null | undefined,

@@ -1,15 +1,15 @@
 import { Button, Grid, Stack, Switch } from "@mui/material";
 import { User } from "firebase/auth";
-import togglePrivacy from "../../functions/togglePrivacy";
+import togglePrivacy from "../../globals/toggleListPrivacy";
 import CategoryCard from "./CategoryCard";
 import ModalPopup from "../ModalPoup";
 import JobAppForm from "./JobAppForm";
 import { useState } from "react";
-import JobAppFields from "../../types/JobAppFields";
-import { jobCategories } from "../../globals";
+import JobAppFieldsTypes from "../../globals/types/JobAppFieldsTypes";
+import { jobCategories } from "../../globals/globalVariables";
 
 export default function JobList({listId, username, user, isPrivate}: {listId: string, username: string, user: User|null|undefined, isPrivate: boolean}){
-    const [showJobAppModal, toggleJobAppModal] = useState<JobAppFields>({value: false, data: {category: "Applied", date: null, color: "#688aad"}});
+    const [showJobAppModal, toggleJobAppModal] = useState<JobAppFieldsTypes>({value: false, data: {category: "Applied", date: null, color: "#688aad"}});
     const isOwner = (user && user.displayName === username)
     return (<>
         <ModalPopup
