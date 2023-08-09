@@ -13,7 +13,7 @@ export default function CategoryCard({title, titleColor, isOwner, toggleModal} :
                 right: '0px',
             }}
             onClick={()=>{ 
-                toggleModal((oldData : JobAppFields)=>{return {value: true, data: {...oldData, category: title}}})
+                toggleModal((oldData : JobAppFields)=>{return {value: true, data: {...oldData, category: title, color: titleColor}}})
             }}
             >
                 <AddIcon/> 

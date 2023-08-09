@@ -6,11 +6,11 @@ import ModalPopup from "../ModalPoup";
 import JobAppForm from "./JobAppForm";
 import { useState } from "react";
 import JobAppFields from "../../types/JobAppFields";
+import { jobCategories } from "../../globals";
 
 export default function JobList({listId, username, user, isPrivate}: {listId: string, username: string, user: User|null|undefined, isPrivate: boolean}){
-    const [showJobAppModal, toggleJobAppModal] = useState<JobAppFields>({value: false, data: {category: "Applied", date: null}});
+    const [showJobAppModal, toggleJobAppModal] = useState<JobAppFields>({value: false, data: {category: "Applied", date: null, color: "#688aad"}});
     const isOwner = (user && user.displayName === username)
-    const jobCategories = [{name: "Applied", color: "#688aad"}, {name: "Interviewing", color: "#b5b36e"}, {name: "Rejected", color: "#b06b76"}, {name: "Offered", color: "#6bb081"}]
     return (<>
         <ModalPopup
         showModal={showJobAppModal.value}
@@ -53,8 +53,8 @@ export default function JobList({listId, username, user, isPrivate}: {listId: st
         <p className="mini">{isOwner ? "Click the \"plus\" icon under any category to add a job to that category, click a job title to view/edit details for that job, or drag and drop job cards between panels to organize them.":"Click a job title to view more information about that job."}</p>
         <Grid container spacing={2} sx={{marginTop: '1%', minHeight: '70vh'}}>
             {
-                jobCategories.map((category)=>{
-                    return <Grid item xs={6} md={3}>
+                jobCategories.map((category, index)=>{
+                    return <Grid item xs={6} md={3} key={index}>
                         <CategoryCard title={category.name} titleColor={category.color} isOwner={isOwner} toggleModal={toggleJobAppModal}/>
                     </Grid>
                 })

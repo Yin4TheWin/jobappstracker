@@ -1,10 +1,10 @@
 import Modal from 'react-bootstrap/Modal';
 import ModalProps from '../types/ModalProps';
 
-export default function ModalPopup({showModal,toggleModal,header,body,footer} : ModalProps){
-    return (<Modal show={showModal} onHide={()=>{toggleModal()}}>
+export default function ModalPopup({showModal, toggleModal, header, body, footer} : ModalProps){
+    return (<Modal size={header==="Job Application Info"?'lg':undefined} show={showModal} onHide={()=>{toggleModal()}}>
     <Modal.Header closeButton>{header}</Modal.Header>
-    <Modal.Body>
+    <Modal.Body style={{width: '100%'}}>
         {body}
     </Modal.Body>
     {footer?<Modal.Footer>

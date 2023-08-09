@@ -1,0 +1,1 @@
+export const jobCategories = [{name: "Applied", color: "#015180"}, {name: "Interviewing", color: "#b5b36e"}, {name: "Rejected", color: "#b06b76"}, {name: "Offered", color: "#6bb081"}]
