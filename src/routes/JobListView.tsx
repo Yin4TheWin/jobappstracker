@@ -49,7 +49,7 @@ export default function ListView(){
             {
                 (loading) ?
                 <ListSkeleton/> :
-                <JobList listId={listId?listId:""} username={username?username:""} user={user} isPrivate={listItems!.private}/>
+                <JobList listId={listId?listId:""} username={username?username:""} user={user} isPrivate={listItems!.private} listItems={listItems}/>
             }
         </div>
     }

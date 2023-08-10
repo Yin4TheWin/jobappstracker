@@ -11,14 +11,16 @@ import { jobCategories } from "../../globals/globalVariables";
 import jobAppFormReducer from "../../reducers/JobAppFormReducer";
 import { ref, update } from "firebase/database";
 import { db } from "../../globals/firebase";
+import ListItemsTypes from "../../globals/types/ListItemsTypes";
+import DeadlineTypes from "../../globals/types/DeadlineTypes";
 
 interface DatabaseUpdates{
     [index: string]: any
 }
 
-export default function JobList({listId, username, user, isPrivate}: {listId: string, username: string, user: User|null|undefined, isPrivate: boolean}){
+export default function JobList({listId, username, user, isPrivate, listItems}: {listId: string, username: string, user: User|null|undefined, isPrivate: boolean, listItems: ListItemsTypes | null}){
     const [showJobAppModal, toggleJobAppModal] = useState(false);
-    const [formState, setFormState] = useReducer(jobAppFormReducer, {category: "Applied", date: "", color: "#688aad", company: "", position: "", link: "", notes: "", recruiterContact: "", recruiterName: "", deadlines: []});
+    const [formState, setFormState] = useReducer(jobAppFormReducer, {category: "Applied", date: "", color: "#688aad", company: "", position: "", link: "", notes: "", recruiterContact: "", recruiterName: "", deadlines: [], uuid: ""});
 
     const isOwner = (user && user.displayName === username)
     return (<>
@@ -29,10 +31,27 @@ export default function JobList({listId, username, user, isPrivate}: {listId: st
         body={<JobAppForm categories={jobCategories} formState={formState} setFormState={setFormState}/>}
         footer={<div>
             <Button color="primary" onClick={()=>{
-                const updates: DatabaseUpdates = {};
-                updates['/users/'+username+'/listVals/'+listId+'/jobs/'+formState.category.toLowerCase()+'/'+formState.company.toLowerCase()+formState.position.toLowerCase()] = formState;
-                update(ref(db), updates)
-            }}>Submit</Button>{' '}
+                if(formState.company.length===0 || formState.position.length===0){
+                    alert("Please fill out all required fields.")
+                    return;
+                } else{
+                    const updates: DatabaseUpdates = {};
+                    let nonEmptyDeadlines:DeadlineTypes[] = []
+                    formState.deadlines.forEach((deadline, index)=>{
+                        if(deadline.name.length!==0){
+                            nonEmptyDeadlines.push(deadline)
+                        }
+                    })
+                    updates['/users/'+username+'/listVals/'+listId+'/jobs/'+formState.category.toLowerCase()+'/'+formState.uuid] = {...formState, deadlines: nonEmptyDeadlines};
+                    jobCategories.forEach(category=>{
+                        if(category.name.toLowerCase()!==formState.category.toLowerCase())
+                            updates['/users/'+username+'/listVals/'+listId+'/jobs/'+category.name.toLowerCase()+'/'+formState.uuid] = {};
+                    })
+                    update(ref(db), updates).then(()=>{
+                        toggleJobAppModal(val=>!val)
+                    })
+                }
+            }}>Save</Button>{' '}
             <Button color="secondary" onClick={()=>{toggleJobAppModal(val=>!val)}}>Cancel</Button>
         </div>
         }
@@ -70,7 +89,7 @@ export default function JobList({listId, username, user, isPrivate}: {listId: st
                     return <Grid item xs={6} md={3} key={index}>
                         <CategoryCard title={category.name} titleColor={category.color} isOwner={isOwner} toggleModal={()=>{
                             toggleJobAppModal(true)
-                        }} setFormState={setFormState}/>
+                        }} setFormState={setFormState} jobs={listItems?.jobs}/>
                     </Grid>
                 })
             }

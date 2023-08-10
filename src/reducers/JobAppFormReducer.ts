@@ -44,7 +44,7 @@ export default function jobAppFormReducer(data: JobAppFieldsTypes, action : JobA
     } else {
         switch(action.type){
             case "CHANGE_ALL":
-                return action.payload;
+                return {...action.payload, deadlines: action.payload.deadlines? action.payload.deadlines : []};
             default:
                 return data;
         }

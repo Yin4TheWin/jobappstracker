@@ -10,5 +10,6 @@ export default interface JobAppFieldsTypes {
     recruiterName: string,
     recruiterContact: string,
     notes: string,
-    deadlines: DeadlineTypes[]
+    deadlines: DeadlineTypes[],
+    uuid: string
 }
