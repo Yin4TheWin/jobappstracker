@@ -1,7 +1,7 @@
-import { onValue, ref, getDatabase, off } from "firebase/database"
+import { onValue, ref, off } from "firebase/database"
 import { useEffect, useState } from "react"
 import { useLoaderData, useParams } from "react-router-dom"
-import { firebase } from "../globals/firebase"
+import { firebase, db } from "../globals/firebase"
 import { useAuthState } from 'react-firebase-hooks/auth';
 
 import '../styles/JobListView.css'
@@ -17,7 +17,6 @@ export default function ListView(){
     const userListRef='users/'+username+'/listVals/'+listId
     const [listItems, setListItems] = useState<ListItemsTypes|null>(useLoaderData() as ListItemsTypes)
     const [loading, setLoading] = useState(true)
-    const [db] = useState(getDatabase(firebase))
 
     const [user] = useAuthState(getAuth(firebase));
 
@@ -38,7 +37,7 @@ export default function ListView(){
         return ()=>{
             off(ref(db, userListRef))
         }
-    }, [db, userListRef, user])
+    }, [userListRef, user])
     
     return (
     <>

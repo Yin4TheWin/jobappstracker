@@ -1,14 +1,12 @@
 import { DatePicker } from '@mui/x-date-pickers';
-import { Box, Button, Grid, MenuItem, TextField, Typography } from "@mui/material";
+import { Box, Button, Grid, IconButton, MenuItem, TextField, Typography } from "@mui/material";
 import dayjs from 'dayjs';
 import JobAppFormTypes from '../../globals/types/JobAppFormTypes';
 import { jobCategories } from '../../globals/globalVariables';
-import { useState } from 'react';
+import { Fragment } from 'react';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 
-
-export default function JobAppForm({categories, data} : JobAppFormTypes){
-    const [selectedCategory, setSelectedCategory] = useState(data.category);
-
+export default function JobAppForm({categories, formState, setFormState} : JobAppFormTypes){
     return (
         <Box
         component="form"
@@ -25,14 +23,14 @@ export default function JobAppForm({categories, data} : JobAppFormTypes){
             select
             fullWidth
             label="Status *"
-            value={selectedCategory}
+            value={formState.category}
             onChange={(e)=>{
-              setSelectedCategory(e.target.value)
+              setFormState({type: 'CHANGE_CATEGORY', payload: e.target.value})
             }}
             helperText="Please select the status of your application"
             sx={{
               '& .MuiInputBase-input': {
-                color: jobCategories.filter(job=>job.name===selectedCategory)[0].color,
+                color: jobCategories.filter(job=>job.name===formState.category)[0].color,
               },
             }}
           >
@@ -44,38 +42,99 @@ export default function JobAppForm({categories, data} : JobAppFormTypes){
           </TextField>
           </Grid>
           <Grid item md={6} xs={12}>
-          <DatePicker slotProps={{ textField: { fullWidth: true } }} label="Date of status update *" defaultValue={data.date?data.date:dayjs()}/>
+          <DatePicker slotProps={{ textField: { fullWidth: true } }} label="Date of status update *" value={formState.date?dayjs(formState.date):dayjs()} onChange={
+            (date)=>{
+              setFormState({type: 'CHANGE_DATE', payload: date?date.format('YYYY-MM-DD'):dayjs().format('YYYY-MM-DD')})
+            }
+          }/>
           </Grid>
           <Grid item md={6} xs={12}>
-            <TextField fullWidth id="company" label="Company *"/>
+            <TextField fullWidth id="company" label="Company *" error={formState.company==null||formState.company.length===0} value={formState.company} onChange={
+              (e)=>{
+                setFormState({type: 'CHANGE_COMPANY', payload: e.target.value})
+              }
+            }/>
           </Grid>
           <Grid item md={6} xs={12}>
-            <TextField fullWidth id="job-title" label="Job Title *"/>
+            <TextField fullWidth id="job-title" label="Job Title *" error={formState.position==null||formState.position.length===0} value={formState.position} onChange={
+              (e)=>{
+                setFormState({type: 'CHANGE_POSITION', payload: e.target.value})
+              }
+            }/>
           </Grid>
           <Grid item xs={12}>
-            <TextField fullWidth id="link" label="Application Link"/>
+            <TextField fullWidth id="link" label="Application Link" value={formState.link} onChange={
+              (e)=>{
+                setFormState({type: 'CHANGE_LINK', payload: e.target.value})
+              }
+            }/>
           </Grid>
           <Grid item md={6} xs={12}>
-            <TextField fullWidth id="recruit-name" label="Recruiter Name"/>
+            <TextField fullWidth id="recruit-name" label="Recruiter Name" value={formState.recruiterName} onChange={
+              (e)=>{
+                setFormState({type: 'CHANGE_RECRUITER_NAME', payload: e.target.value})
+              }
+            }/>
           </Grid>
           <Grid item md={6} xs={12}>
-            <TextField fullWidth id="recruit-info" label="Recruiter Contact"/>
+            <TextField fullWidth id="recruit-info" label="Recruiter Contact" value={formState.recruiterContact} onChange={
+              (e)=>{
+                setFormState({type: 'CHANGE_RECRUITER_CONTACT', payload: e.target.value})
+              }
+            }/>
           </Grid>
           <Grid item xs={12}>
-          <Typography variant="body1" sx={{color: 'black', fontWeight: 'bold'}}>Deadlines</Typography>
+          <Typography variant="body1" sx={{color: 'black', fontWeight: 'bold', fontSize: '1.1rem'}}>Deadlines</Typography>
           </Grid>
-          <Grid item xs={6}>
-            <TextField fullWidth label="Type of Deadline"/>
-          </Grid>
-          <Grid item xs={6}>
-          <DatePicker slotProps={{ textField: { fullWidth: true } }} label="Due on" defaultValue={dayjs()}/>
-          </Grid>
-          <Button variant="contained" color="primary" sx={{margin: 'auto', marginTop: '2%'}}>Add Deadline</Button>
+          {
+            formState.deadlines.length===0? 
+            <Grid item xs={12}>
+            <Typography variant="body1" sx={{fontSize: '0.9rem'}}>None yet! Click below to add an upcoming deadline.</Typography>
+            </Grid>: 
+            formState.deadlines.map((deadline, index)=>{
+              let newDeadlines = [...formState.deadlines];
+              return (<Fragment key={index}>
+              <Grid item xs={6}>
+                <TextField fullWidth label="Type of Deadline" value={deadline.name} onChange={
+                  (e)=>{
+                    newDeadlines[index].name = e.target.value;
+                    setFormState({type: 'CHANGE_DEADLINES', payload: newDeadlines})
+                  }
+                }/>
+              </Grid>
+              <Grid item xs={5}>
+                <DatePicker slotProps={{ textField: { fullWidth: true } }} label="Due on" value={dayjs(deadline.date)} onChange={
+                  (date)=>{
+                    newDeadlines[index].date = date?date.format('YYYY-MM-DD'):dayjs().format('YYYY-MM-DD');
+                    setFormState({type: 'CHANGE_DEADLINES', payload: newDeadlines})
+                  }
+                }/>
+              </Grid>
+              <Grid item xs={1}>
+                <IconButton onClick={
+                  ()=>{
+                    setFormState({type: 'REMOVE_DEADLINE', payload: index})
+                  }}>
+                  <DeleteRoundedIcon/>
+                </IconButton>
+                </Grid>
+          </Fragment>)
+            })
+          }
+          <Button variant="contained" onClick={
+            ()=>{
+              setFormState({type: 'ADD_DEADLINE', payload: [{name: '', date: dayjs().format('YYYY-MM-DD')}]})
+            }
+          } color="primary" sx={{margin: 'auto', marginTop: '2%'}}>Add Deadline</Button>
           <Grid item xs={12}>
           <Typography variant="body1" sx={{color: 'black', fontWeight: 'bold'}}>Notes</Typography>
           </Grid>
           <Grid item xs={12}>
-            <TextField fullWidth id="notes" label="Notes" multiline rows={4}/>
+            <TextField fullWidth id="notes" label="Notes" multiline rows={4} value={formState.notes} onChange={
+              (e)=>{
+                setFormState({type: 'CHANGE_NOTES', payload: e.target.value})
+              }
+            }/>
           </Grid>
         </Grid>
         </Box>

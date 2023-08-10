@@ -1,26 +1,39 @@
 import { Button, Grid, Stack, Switch } from "@mui/material";
 import { User } from "firebase/auth";
+import { useReducer, useState } from "react";
+
 import togglePrivacy from "../../globals/toggleListPrivacy";
 import CategoryCard from "./CategoryCard";
 import ModalPopup from "../ModalPoup";
 import JobAppForm from "./JobAppForm";
-import { useState } from "react";
-import JobAppFieldsTypes from "../../globals/types/JobAppFieldsTypes";
+
 import { jobCategories } from "../../globals/globalVariables";
+import jobAppFormReducer from "../../reducers/JobAppFormReducer";
+import { ref, update } from "firebase/database";
+import { db } from "../../globals/firebase";
+
+interface DatabaseUpdates{
+    [index: string]: any
+}
 
 export default function JobList({listId, username, user, isPrivate}: {listId: string, username: string, user: User|null|undefined, isPrivate: boolean}){
-    const [showJobAppModal, toggleJobAppModal] = useState<JobAppFieldsTypes>({value: false, data: {category: "Applied", date: null, color: "#688aad"}});
+    const [showJobAppModal, toggleJobAppModal] = useState(false);
+    const [formState, setFormState] = useReducer(jobAppFormReducer, {category: "Applied", date: "", color: "#688aad", company: "", position: "", link: "", notes: "", recruiterContact: "", recruiterName: "", deadlines: []});
+
     const isOwner = (user && user.displayName === username)
     return (<>
         <ModalPopup
-        showModal={showJobAppModal.value}
-        toggleModal={()=>toggleJobAppModal({value: !showJobAppModal.value, data: showJobAppModal.data})}
+        showModal={showJobAppModal}
+        toggleModal={()=>toggleJobAppModal(val=>!val)}
         header={"Job Application Info"}
-        body={<JobAppForm categories={jobCategories} data={showJobAppModal.data}/>}
+        body={<JobAppForm categories={jobCategories} formState={formState} setFormState={setFormState}/>}
         footer={<div>
             <Button color="primary" onClick={()=>{
+                const updates: DatabaseUpdates = {};
+                updates['/users/'+username+'/listVals/'+listId+'/data'] = formState;
+                update(ref(db), updates)
             }}>Submit</Button>{' '}
-            <Button color="secondary" onClick={()=>{toggleJobAppModal({value: !showJobAppModal.value, data: showJobAppModal.data})}}>Cancel</Button>
+            <Button color="secondary" onClick={()=>{toggleJobAppModal(val=>!val)}}>Cancel</Button>
         </div>
         }
         />
@@ -33,7 +46,7 @@ export default function JobList({listId, username, user, isPrivate}: {listId: st
         {isOwner && 
         <Stack direction="row" spacing={1} alignItems="center">
         <Switch
-        checked={isPrivate}
+        checked={!isPrivate}
         inputProps={{ 'aria-label': 'controlled' }}
         sx={{
             '& .MuiSwitch-switchBase.Mui-checked': {
@@ -55,7 +68,9 @@ export default function JobList({listId, username, user, isPrivate}: {listId: st
             {
                 jobCategories.map((category, index)=>{
                     return <Grid item xs={6} md={3} key={index}>
-                        <CategoryCard title={category.name} titleColor={category.color} isOwner={isOwner} toggleModal={toggleJobAppModal}/>
+                        <CategoryCard title={category.name} titleColor={category.color} isOwner={isOwner} toggleModal={()=>{
+                            toggleJobAppModal(true)
+                        }} setFormState={setFormState}/>
                     </Grid>
                 })
             }

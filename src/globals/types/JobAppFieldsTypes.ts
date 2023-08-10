@@ -1,8 +1,14 @@
+import DeadlineTypes from "./DeadlineTypes"
+
 export default interface JobAppFieldsTypes {
-    value: boolean,
-    data: {
-        category: string,
-        color: string,
-        date: string | null | undefined
-    }
+    category: string,
+    color: string,
+    date: string,
+    company: string,
+    position: string,
+    link: string,
+    recruiterName: string,
+    recruiterContact: string,
+    notes: string,
+    deadlines: DeadlineTypes[]
 }

@@ -162,7 +162,7 @@ export default function MyLists({auth, user, db}: MyListTypes){
             if(userLists==null || !(newListName in userLists)){
                 const updates: DatabaseUpdates={}
                 updates['users/'+displayName+'/listNames/'+newListName]=Date.now()
-                updates['users/'+displayName+'/listVals/'+newListName]={private: false}
+                updates['users/'+displayName+'/listVals/'+newListName]={private: true}
                 update(ref(db), updates).then(()=>{
                     setNewListName("")
                     generateModal("List Was Created", newListName+" was successfully created! You may now access it under the \"My Lists\" table.")
