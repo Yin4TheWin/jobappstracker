@@ -30,7 +30,7 @@ export default function JobList({listId, username, user, isPrivate}: {listId: st
         footer={<div>
             <Button color="primary" onClick={()=>{
                 const updates: DatabaseUpdates = {};
-                updates['/users/'+username+'/listVals/'+listId+'/data'] = formState;
+                updates['/users/'+username+'/listVals/'+listId+'/jobs/'+formState.category.toLowerCase()+'/'+formState.company.toLowerCase()+formState.position.toLowerCase()] = formState;
                 update(ref(db), updates)
             }}>Submit</Button>{' '}
             <Button color="secondary" onClick={()=>{toggleJobAppModal(val=>!val)}}>Cancel</Button>
