@@ -26,7 +26,7 @@ export default function CategoryCard({title, titleColor, isOwner, toggleModal, s
         if(jobs){
             setJobsOfMyCategory(jobs[title.toLowerCase()])
         }
-    }, [jobs])
+    }, [jobs, title])
 
     const [showConfirmModal, toggleConfirmModal] = useState(false);
     const [modalBody, setModalBody] = useState("")
