@@ -89,7 +89,7 @@ export default function JobList({listId, username, user, isPrivate, listItems}: 
                     return <Grid item xs={6} md={3} key={index}>
                         <CategoryCard title={category.name} titleColor={category.color} isOwner={isOwner} toggleModal={()=>{
                             toggleJobAppModal(true)
-                        }} setFormState={setFormState} jobs={listItems?.jobs}/>
+                        }} setFormState={setFormState} jobs={listItems?.jobs} username={username} listId={listId}/>
                     </Grid>
                 })
             }

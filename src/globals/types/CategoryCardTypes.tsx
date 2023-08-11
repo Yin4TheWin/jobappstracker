@@ -13,5 +13,7 @@ export default interface CategoryCardTypes {
         [category: string]: {
             [job: string]: JobAppFieldsTypes
         }
-    } | undefined
+    } | undefined,
+    username: string,
+    listId: string,
 }
