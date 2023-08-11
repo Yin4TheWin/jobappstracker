@@ -15,7 +15,9 @@ import ListItemsTypes from "../../globals/types/ListItemsTypes";
 import DeadlineTypes from "../../globals/types/DeadlineTypes";
 
 import { DndProvider } from 'react-dnd'
+import {isBrowser} from 'react-device-detect';
 import { HTML5Backend } from 'react-dnd-html5-backend'
+import { TouchBackend } from 'react-dnd-touch-backend'
 
 interface DatabaseUpdates{
     [index: string]: any
@@ -26,7 +28,7 @@ export default function JobList({listId, username, user, isPrivate, listItems}: 
     const [formState, setFormState] = useReducer(jobAppFormReducer, {category: "Applied", date: "", color: "#688aad", company: "", position: "", link: "", notes: "", recruiterContact: "", recruiterName: "", deadlines: [], uuid: ""});
 
     const isOwner = (user && user.displayName === username)
-    return (<DndProvider backend={HTML5Backend}>
+    return (<DndProvider backend={isBrowser?HTML5Backend:TouchBackend}>
         <ModalPopup
         showModal={showJobAppModal}
         toggleModal={()=>toggleJobAppModal(val=>!val)}
