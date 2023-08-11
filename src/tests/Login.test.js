@@ -9,6 +9,7 @@ Write unit tests for a Login component which check the following:
 // Path: src/tests/Login.test.js
 import { render, screen, fireEvent } from '@testing-library/react';
 import Login from '../components/Login';
+import '@testing-library/jest-dom'
 
 describe('The Login component', () => {
     test('renders a clickable submit button', () => {

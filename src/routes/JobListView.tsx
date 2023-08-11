@@ -1,22 +1,22 @@
-import { onValue, ref, getDatabase, off } from "firebase/database"
+import { onValue, ref, off } from "firebase/database"
 import { useEffect, useState } from "react"
 import { useLoaderData, useParams } from "react-router-dom"
-import { firebase } from "../firebase"
+import { firebase, db } from "../globals/firebase"
 import { useAuthState } from 'react-firebase-hooks/auth';
 
-import '../styles/ListView.css'
+import '../styles/JobListView.css'
 import SiteNavbar from "./Navbar"
 import { getAuth } from "firebase/auth"
 import InvalidList from "../components/ListView/InvalidList"
 import ListSkeleton from "../components/ListView/ListSkeleton"
 import JobList from "../components/ListView/JobList"
+import ListItemsTypes from "../globals/types/ListItemsTypes";
 
 export default function ListView(){
     const {username, listId} = useParams()
     const userListRef='users/'+username+'/listVals/'+listId
-    const [listItems, setListItems] = useState(useLoaderData())
+    const [listItems, setListItems] = useState<ListItemsTypes|null>(useLoaderData() as ListItemsTypes)
     const [loading, setLoading] = useState(true)
-    const [db] = useState(getDatabase(firebase))
 
     const [user] = useAuthState(getAuth(firebase));
 
@@ -37,7 +37,7 @@ export default function ListView(){
         return ()=>{
             off(ref(db, userListRef))
         }
-    }, [db, userListRef, user])
+    }, [userListRef, user])
     
     return (
     <>
@@ -49,7 +49,7 @@ export default function ListView(){
             {
                 (loading) ?
                 <ListSkeleton/> :
-                <JobList listId={listId?listId:""} username={username?username:""}/>
+                <JobList listId={listId?listId:""} username={username?username:""} user={user} isPrivate={listItems!.private} listItems={listItems}/>
             }
         </div>
     }

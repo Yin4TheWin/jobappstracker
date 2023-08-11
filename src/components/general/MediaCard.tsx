@@ -8,8 +8,8 @@ export default function MediaCard({imageLink, title, description, alt}: {imageLi
   return (
     <Card sx={{ maxWidth: 345 }}>
       <CardMedia
-        sx={{ height: 140 }}
-        image={imageLink}
+        sx={{ height: 140 }} 
+        image={require(`../../imgs/${imageLink}`)}
         title={alt}
       />
       <CardContent>

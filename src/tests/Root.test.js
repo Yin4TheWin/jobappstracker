@@ -1,4 +1,5 @@
 import { MemoryRouter } from 'react-router-dom';
+import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react';
 import Root from '../routes/Root';
 import Circuit from '../routes/Circuit';

@@ -12,6 +12,16 @@
     font-size: 0.75em;
     color: gray;
     margin-bottom: 0.1em;
+    text-align: left;
+  }
+
+  p.mini.center{
+    text-align: center;
+  }
+  
+  p.mini.bold{
+    color: rgb(79, 78, 78);
+    font-weight: bold;
   }
 
   .error-header{

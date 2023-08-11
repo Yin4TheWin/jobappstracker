@@ -8,26 +8,20 @@ import ModalPopup from "./ModalPoup";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro' 
 
-import { Auth, signOut, User } from "firebase/auth"
-import { ref, onValue, update, get, Database, off } from "firebase/database";
+import { signOut } from "firebase/auth"
+import { ref, onValue, update, get, off } from "firebase/database";
 
 import { Link } from 'react-router-dom';
 
 import { SetStateAction, useEffect, useState } from 'react';
 import { Skeleton, Stack } from '@mui/material';
-
-
-interface MyListProps{
-    auth: Auth,
-    user: User | null,
-    db: Database
-}
+import MyListTypes from '../globals/types/MyListTypes';
 
 interface DatabaseUpdates{
     [index: string]: any
 }
 
-export default function MyLists({auth, user, db}: MyListProps){
+export default function MyLists({auth, user, db}: MyListTypes){
     const [displayName, setDisplayName] = useState("")
     const [newListName, setNewListName] = useState("")
     const [newNameOfList, setNewNameOfList] = useState("")
@@ -168,7 +162,7 @@ export default function MyLists({auth, user, db}: MyListProps){
             if(userLists==null || !(newListName in userLists)){
                 const updates: DatabaseUpdates={}
                 updates['users/'+displayName+'/listNames/'+newListName]=Date.now()
-                updates['users/'+displayName+'/listVals/'+newListName]={private: false}
+                updates['users/'+displayName+'/listVals/'+newListName]={private: true}
                 update(ref(db), updates).then(()=>{
                     setNewListName("")
                     generateModal("List Was Created", newListName+" was successfully created! You may now access it under the \"My Lists\" table.")
