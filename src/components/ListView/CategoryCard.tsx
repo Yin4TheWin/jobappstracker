@@ -1,6 +1,6 @@
 import { Button, Card, Grid, IconButton, Typography } from "@mui/material";
 import CategoryCardTypes from "../../globals/types/CategoryCardTypes";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import ModalPopup from "../ModalPoup";
 
 import { v4 as uuidv4 } from 'uuid';
@@ -17,7 +17,16 @@ import { ItemTypes } from "../../globals/types/DraggableItemTypes";
 import { jobCategories } from "../../globals/globalVariables";
 
 export default function CategoryCard({title, titleColor, isOwner, toggleModal, setFormState, jobs, username, listId} : CategoryCardTypes){
-    const jobsOfMyCategory = jobs && jobs[title.toLowerCase()]
+    const [jobsOfMyCategory, setJobsOfMyCategory] = useState <
+        {
+            [job: string]: JobAppFieldsTypes
+        }
+     | undefined> ()
+    useEffect(()=>{
+        if(jobs){
+            setJobsOfMyCategory(jobs[title.toLowerCase()])
+        }
+    }, [jobs])
 
     const [showConfirmModal, toggleConfirmModal] = useState(false);
     const [modalBody, setModalBody] = useState("")
@@ -27,6 +36,7 @@ export default function CategoryCard({title, titleColor, isOwner, toggleModal, s
         accept: ItemTypes.CARD,
         drop: (item: JobAppFieldsTypes) => {
             const updates: any = {};
+            item.category = title;
             updates['/users/'+username+'/listVals/'+listId+'/jobs/'+title.toLowerCase()+'/'+item.uuid] = item;
             jobCategories.forEach(category=>{
                 if(category.name.toLowerCase()!==title.toLowerCase())
@@ -37,7 +47,7 @@ export default function CategoryCard({title, titleColor, isOwner, toggleModal, s
         collect: monitor => ({
             isOver: !!monitor.isOver(),
         }),
-    })
+    }, [jobsOfMyCategory])
 
     function handleOpenJobApp(job: JobAppFieldsTypes){
         return () =>{ 
