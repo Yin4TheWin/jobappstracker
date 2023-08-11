@@ -12,9 +12,6 @@ export default function SiteNavbar() {
               <Link to="/" className='nav-link'>
                   Home
               </Link>
-              <Link to="/" className='nav-link'>
-                  About
-              </Link>
               <Link to="/profile" className='nav-link'>
                   My Lists
               </Link>

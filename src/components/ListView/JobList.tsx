@@ -14,6 +14,9 @@ import { db } from "../../globals/firebase";
 import ListItemsTypes from "../../globals/types/ListItemsTypes";
 import DeadlineTypes from "../../globals/types/DeadlineTypes";
 
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
+
 interface DatabaseUpdates{
     [index: string]: any
 }
@@ -23,7 +26,7 @@ export default function JobList({listId, username, user, isPrivate, listItems}: 
     const [formState, setFormState] = useReducer(jobAppFormReducer, {category: "Applied", date: "", color: "#688aad", company: "", position: "", link: "", notes: "", recruiterContact: "", recruiterName: "", deadlines: [], uuid: ""});
 
     const isOwner = (user && user.displayName === username)
-    return (<>
+    return (<DndProvider backend={HTML5Backend}>
         <ModalPopup
         showModal={showJobAppModal}
         toggleModal={()=>toggleJobAppModal(val=>!val)}
@@ -94,5 +97,5 @@ export default function JobList({listId, username, user, isPrivate, listItems}: 
                 })
             }
         </Grid>
-    </>)
+    </DndProvider>)
 }

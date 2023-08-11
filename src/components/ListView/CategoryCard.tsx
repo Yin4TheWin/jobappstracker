@@ -6,20 +6,79 @@ import ModalPopup from "../ModalPoup";
 import { v4 as uuidv4 } from 'uuid';
 
 import AddIcon from '@mui/icons-material/Add';
-import LinkIcon from '@mui/icons-material/Link';
-import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import JobAppFieldsTypes from "../../globals/types/JobAppFieldsTypes";
 
-import { ref, remove } from "firebase/database";
+import { ref, remove, update } from "firebase/database";
 import { db } from "../../globals/firebase";
+import JobCard from "./JobCard";
+
+import { useDrop } from 'react-dnd'
+import { ItemTypes } from "../../globals/types/DraggableItemTypes";
+import { jobCategories } from "../../globals/globalVariables";
 
 export default function CategoryCard({title, titleColor, isOwner, toggleModal, setFormState, jobs, username, listId} : CategoryCardTypes){
+    const jobsOfMyCategory = jobs && jobs[title.toLowerCase()]
+
     const [showConfirmModal, toggleConfirmModal] = useState(false);
     const [modalBody, setModalBody] = useState("")
     const [modalFooter, setModalFooter] = useState(<></>)
-    const jobsOfMyCategory = jobs && jobs[title.toLowerCase()]
 
+    const [{ isOver }, drop] = useDrop({
+        accept: ItemTypes.CARD,
+        drop: (item: JobAppFieldsTypes) => {
+            const updates: any = {};
+            updates['/users/'+username+'/listVals/'+listId+'/jobs/'+title.toLowerCase()+'/'+item.uuid] = item;
+            jobCategories.forEach(category=>{
+                if(category.name.toLowerCase()!==title.toLowerCase())
+                    updates['/users/'+username+'/listVals/'+listId+'/jobs/'+category.name.toLowerCase()+'/'+item.uuid] = {};
+            })
+            update(ref(db), updates)
+        },
+        collect: monitor => ({
+            isOver: !!monitor.isOver(),
+        }),
+    })
+
+    function handleOpenJobApp(job: JobAppFieldsTypes){
+        return () =>{ 
+            toggleModal()
+            setFormState({type: 'CHANGE_ALL', payload: job})
+        }
+    }
+
+    function handleOpenJobLink(job: JobAppFieldsTypes){
+        return ()=>{
+            setModalBody(`This link goes to ${job.link}. Are you sure you want to go there?`)
+            setModalFooter(<div>
+                <Button color="success" onClick={()=>{
+                    toggleConfirmModal(val=>!val)
+                    window.open(job.link, "_blank")
+                }}>Yes, take me there!</Button>
+                <Button color="error" onClick={()=>{toggleConfirmModal(val=>!val)}}>No, take me back!</Button>
+            </div>)
+            toggleConfirmModal(val=>!val)
+        }
+    }
+
+    function handleDeleteJobApp(job: JobAppFieldsTypes){
+        return ()=>{
+            setModalBody(`Are you sure you want to delete this application (${job.position} at ${job.company})?`)
+            setModalFooter(<div>
+                <Button color="error" onClick={()=>{
+                    remove(ref(db, '/users/'+username+'/listVals/'+listId+'/jobs/'+job.category.toLowerCase()+'/'+job.uuid)).then(()=>{
+                        toggleConfirmModal(val=>!val)
+                    }).catch((error)=>{
+                        console.log(error)
+                        alert("Something went wrong: please try again later.")
+                    })
+                }}>Yes, delete it!</Button>
+                <Button color="info" onClick={()=>{toggleConfirmModal(val=>!val)}}>No, keep it!</Button>
+            </div>)
+            toggleConfirmModal(val=>!val)
+        }
+    }
     return (
-        <Card variant="outlined" sx={{width: '100%', height: '100%',  backgroundColor: '#f7f7f7', position: 'relative'}}>
+        <Card variant="outlined" sx={{width: '100%', height: '100%', backgroundColor: isOver?'#e0e0e0':'#f7f7f7', position: 'relative', overflowY: 'hidden'}} ref={drop}>
             <ModalPopup
             showModal={showConfirmModal}
             toggleModal={()=>toggleConfirmModal(val=>!val)}
@@ -49,48 +108,7 @@ export default function CategoryCard({title, titleColor, isOwner, toggleModal, s
                         <Fragment key={index}>
                             <Grid item xs={0.5}></Grid>
                             <Grid item xs={11}>
-                                <Card variant="outlined" sx={{
-                                    color: 'white',
-                                    position: 'relative',
-                                }}>
-                                    <Typography variant="h5" color={"black"} align="left" margin={"1%"} marginLeft={"2%"}><button className="link" onClick={() =>{ 
-                                        toggleModal()
-                                        setFormState({type: 'CHANGE_ALL', payload: jobsOfMyCategory[job]})
-                                    }}>{jobsOfMyCategory[job].company}</button>  
-                                    {jobsOfMyCategory[job].link && <IconButton onClick={()=>{
-                                        setModalBody(`This link goes to ${jobsOfMyCategory[job].link}. Are you sure you want to go there?`)
-                                        setModalFooter(<div>
-                                            <Button color="success" onClick={()=>{window.open(jobsOfMyCategory[job].link, "_blank")}}>Yes, take me there!</Button>
-                                            <Button color="error" onClick={()=>{toggleConfirmModal(val=>!val)}}>No, take me back!</Button>
-                                        </div>)
-                                        toggleConfirmModal(val=>!val)
-                                    }}>
-                                        <LinkIcon/>
-                                    </IconButton>}
-                                    </Typography>
-                                    <Typography align="left" color="gray" margin={"1%"} marginLeft={"2%"}>{jobsOfMyCategory[job].position}</Typography>
-                                    {isOwner && <IconButton style={{
-                                        position: 'absolute',
-                                        top: '0px',
-                                        right: '0px',
-                                    }} onClick={()=>{
-                                        setModalBody(`Are you sure you want to delete this application (${jobsOfMyCategory[job].position} at ${jobsOfMyCategory[job].company})?`)
-                                        setModalFooter(<div>
-                                            <Button color="error" onClick={()=>{
-                                                remove(ref(db, '/users/'+username+'/listVals/'+listId+'/jobs/'+jobsOfMyCategory[job].category.toLowerCase()+'/'+jobsOfMyCategory[job].uuid)).then(()=>{
-                                                    toggleConfirmModal(val=>!val)
-                                                }).catch((error)=>{
-                                                    console.log(error)
-                                                    alert("Something went wrong: please try again later.")
-                                                })
-                                            }}>Yes, delete it!</Button>
-                                            <Button color="info" onClick={()=>{toggleConfirmModal(val=>!val)}}>No, take me back!</Button>
-                                        </div>)
-                                        toggleConfirmModal(val=>!val)
-                                    }}>
-                                        <DeleteRoundedIcon/>
-                                    </IconButton>}
-                                </Card>
+                                <JobCard isOwner={isOwner} job={jobsOfMyCategory[job]} handleOpenJobApp={handleOpenJobApp} handleOpenJobLink={handleOpenJobLink} handleDeleteJobApp={handleDeleteJobApp} />
                             </Grid>
                             <Grid item xs={0.5}></Grid>
                         </Fragment>
