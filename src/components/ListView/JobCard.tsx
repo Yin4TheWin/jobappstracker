@@ -14,7 +14,7 @@ export default function JobCard({isOwner, job, handleOpenJobApp, handleOpenJobLi
         collect: (monitor) => ({
           isDragging: !!monitor.isDragging()
         })
-    }))
+    }), [job])
     return (<Card 
         variant="outlined" 
         ref={isOwner?drag:null}

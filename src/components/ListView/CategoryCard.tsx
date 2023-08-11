@@ -26,7 +26,6 @@ export default function CategoryCard({title, titleColor, isOwner, toggleModal, s
     const [{ isOver }, drop] = useDrop({
         accept: ItemTypes.CARD,
         drop: (item: JobAppFieldsTypes) => {
-            alert(`You dropped ${item.company} into ${title.toLowerCase()}`)
             const updates: any = {};
             updates['/users/'+username+'/listVals/'+listId+'/jobs/'+title.toLowerCase()+'/'+item.uuid] = item;
             jobCategories.forEach(category=>{
