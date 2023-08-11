@@ -6,5 +6,6 @@ import JobAppFormReducerTypes from "./JobAppFormReducerTypes";
 export default interface JobAppFormTypes {
     categories: {name: string, color: string}[],
     formState: JobAppFieldsTypes,
-    setFormState: Dispatch<JobAppFormReducerTypes>
+    setFormState: Dispatch<JobAppFormReducerTypes>,
+    isOwner: boolean | null | undefined
 }

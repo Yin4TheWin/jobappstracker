@@ -28,8 +28,8 @@ export default function JobList({listId, username, user, isPrivate, listItems}: 
         showModal={showJobAppModal}
         toggleModal={()=>toggleJobAppModal(val=>!val)}
         header={"Job Application Info"}
-        body={<JobAppForm categories={jobCategories} formState={formState} setFormState={setFormState}/>}
-        footer={<div>
+        body={<JobAppForm categories={jobCategories} formState={formState} setFormState={setFormState} isOwner={isOwner}/>}
+        footer={isOwner && <div>
             <Button color="primary" onClick={()=>{
                 if(formState.company.length===0 || formState.position.length===0){
                     alert("Please fill out all required fields.")
