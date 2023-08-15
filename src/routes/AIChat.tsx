@@ -31,6 +31,7 @@ async function sendBotResponse(query: string, history: HistoryType[], username: 
         [job: string]: JobAppFieldsTypes
     }
 }|null = null) {
+    console.log(listData)
     let newQuery = "";
     let applied={}, interviewing={}, offered={}, rejected={}
     if(listData!==null){
@@ -70,19 +71,6 @@ async function sendBotResponse(query: string, history: HistoryType[], username: 
         console.log(err.message);
     });
     return response;
-}
-
-function setAllJobCategoriesToApplied(jobs: {
-    [category: string]: {
-        [job: string]: JobAppFieldsTypes
-    }
-}){
-    Object.keys(jobs).forEach((category) => {
-        Object.keys(jobs[category]).forEach((job) => {
-            jobs[category][job]["category"] = "Applied"
-        })
-    })
-    return jobs
 }
 
 function AIChat() {
@@ -238,12 +226,25 @@ function AIChat() {
                     onSubmit={(e) => {
                         e.preventDefault();
                         if (queryText.length > 0 && !blockQueries.current) {
-                            setQuery(queryText);
-                            setMessages((m) => [
-                                ...m,
-                                { msg: queryText, author: "You" },
-                            ]);
-                            setQueryText("");
+                            if(selectedListData===null){
+                                getSpecificListData(username, listNames[selectedListIndex]).then((data) => {
+                                    console.log(data)
+                                    setSelectedListData(data["jobs"])
+                                    setQuery(queryText);
+                                    setMessages((m) => [
+                                        ...m,
+                                        { msg: queryText, author: "You" },
+                                    ]);
+                                    setQueryText("");
+                                })
+                            } else{
+                                setQuery(queryText);
+                                setMessages((m) => [
+                                    ...m,
+                                    { msg: queryText, author: "You" },
+                                ]);
+                                setQueryText("");
+                            }
                         }
                     }}
                 >
@@ -273,7 +274,7 @@ function AIChat() {
                                         if(selectedListData===null){
                                             getSpecificListData(username, listNames[selectedListIndex]).then((data) => {
                                                 console.log(data)
-                                                setSelectedListData(setAllJobCategoriesToApplied(data["jobs"]))
+                                                setSelectedListData(data["jobs"])
                                                 setQuery(queryText);
                                                 setMessages((m) => [
                                                     ...m,
