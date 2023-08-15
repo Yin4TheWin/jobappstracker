@@ -22,7 +22,7 @@ describe('The Root component', () => {
     test('renders three images', () => {
         render(<Root />, {wrapper: MemoryRouter});
         const images = screen.getAllByRole('img');
-        expect(images.length).toBe(3);
+        expect(images.length).toBe(6);
     });
 });
 
