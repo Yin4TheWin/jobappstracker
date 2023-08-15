@@ -1,3 +1,4 @@
+import { Typography } from '@mui/material';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { Link } from "react-router-dom";
@@ -14,6 +15,18 @@ export default function SiteNavbar() {
               </Link>
               <Link to="/profile" className='nav-link'>
                   My Lists
+              </Link>
+              <Link to="/" className='nav-link' >
+                <Typography sx={{
+                        backgroundcolor: "primary",
+                        backgroundImage: `linear-gradient(to left top, #380152, #ff2424)`,
+                        backgroundSize: "100%",
+                        backgroundRepeat: "repeat",
+                        backgroundClip: "text",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        display: "inline",
+                    }}>F.R.A.N.K.</Typography>
               </Link>
           </Nav>
         </Navbar.Collapse>

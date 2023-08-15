@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 export default function Root(){
 
     useEffect(()=>{
-        document.title = 'Job App Tracker';
+        document.title = 'Job Apps Tracker';
     },[])
 
     return (
@@ -49,6 +49,9 @@ export default function Root(){
                 <MediaCard title="Share (or don't!)" alt="Share (or don't!)" description="Easily toggle your list between private and public: while on public, simply copy paste your job list's link to your friends, and they can view it!" imageLink="public_private.png"/>
                 </Grid>
                 </Grid>
+                <Typography>
+                    Introducing
+                </Typography>
                 <Typography
                     variant="h4"
                     sx={{
