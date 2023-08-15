@@ -16,7 +16,7 @@ export default function SiteNavbar() {
               <Link to="/profile" className='nav-link'>
                   My Lists
               </Link>
-              <Link to="/" className='nav-link' >
+              <Link to="/frank" className='nav-link' >
                 <Typography sx={{
                         backgroundcolor: "primary",
                         backgroundImage: `linear-gradient(to left top, #380152, #ff2424)`,

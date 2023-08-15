@@ -138,7 +138,7 @@ export default function Login(){
             }/>
             <h1>{loginState?"Log In":"Sign Up"}</h1>
             <p className="emphasize">{loginState?"Welcome back! Your job lists have been waiting for you.":"Welcome! You're one step away from organizing your job search."}</p>
-            <p style={{textAlign:'center'}}>{loginState?"Don't have an account?":"Already have an account?"} <button className="link" onClick={() =>{ 
+            <p style={{alignSelf:'center'}}>{loginState?"Don't have an account?":"Already have an account?"} <button className="link" onClick={() =>{ 
                 toggleLoginState(!loginState) }}>Click here</button> to {loginState?"sign up":"log in"}</p>  
             <Box
             component="form" 
