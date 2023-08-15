@@ -14,6 +14,7 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import CircuitCanvas from './routes/Circuit';
+import AIChat from './routes/AIChat';
 
 const router = createBrowserRouter([
   {
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
       {
         path: ":username/:listId",
         element: <ListView/>,
+      },
+      {
+        path: "/frank",
+        element: <AIChat/>
       }
     ],
     errorElement: <Navigate to ="/"/>

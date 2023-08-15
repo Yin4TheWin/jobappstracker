@@ -15,6 +15,7 @@ import JobCard from "./JobCard";
 import { useDrop } from 'react-dnd'
 import { ItemTypes } from "../../globals/types/DraggableItemTypes";
 import { jobCategories } from "../../globals/globalVariables";
+import dayjs from "dayjs";
 
 export default function CategoryCard({title, titleColor, isOwner, toggleModal, setFormState, jobs, username, listId} : CategoryCardTypes){
     const [jobsOfMyCategory, setJobsOfMyCategory] = useState <
@@ -106,7 +107,7 @@ export default function CategoryCard({title, titleColor, isOwner, toggleModal, s
             }}
             onClick={()=>{ 
                 toggleModal()
-                setFormState({type: 'CHANGE_ALL', payload: {category: title, date: "", color: titleColor, company: "", position: "", link: "", notes: "", recruiterContact: "", recruiterName: "", deadlines: [], uuid: uuidv4()}})
+                setFormState({type: 'CHANGE_ALL', payload: {category: title, date: dayjs().format('YYYY-MM-DD'), color: titleColor, company: "", position: "", link: "", notes: "", recruiterContact: "", recruiterName: "", deadlines: [], uuid: uuidv4()}})
             }}
             >
                 <AddIcon/> 
