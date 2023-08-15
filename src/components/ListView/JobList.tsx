@@ -18,6 +18,7 @@ import { DndProvider } from 'react-dnd'
 import {isBrowser} from 'react-device-detect';
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { TouchBackend } from 'react-dnd-touch-backend'
+import dayjs from "dayjs";
 
 interface DatabaseUpdates{
     [index: string]: any
@@ -25,7 +26,7 @@ interface DatabaseUpdates{
 
 export default function JobList({listId, username, user, isPrivate, listItems}: {listId: string, username: string, user: User|null|undefined, isPrivate: boolean, listItems: ListItemsTypes | null}){
     const [showJobAppModal, toggleJobAppModal] = useState(false);
-    const [formState, setFormState] = useReducer(jobAppFormReducer, {category: "Applied", date: "", color: "#688aad", company: "", position: "", link: "", notes: "", recruiterContact: "", recruiterName: "", deadlines: [], uuid: ""});
+    const [formState, setFormState] = useReducer(jobAppFormReducer, {category: "Applied", date: dayjs().format('YYYY-MM-DD'), color: "#688aad", company: "", position: "", link: "", notes: "", recruiterContact: "", recruiterName: "", deadlines: [], uuid: ""});
 
     const isOwner = (user && user.displayName === username)
     return (<DndProvider backend={isBrowser?HTML5Backend:TouchBackend}>

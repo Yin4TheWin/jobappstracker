@@ -8,7 +8,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 export default function CircuitCanvas() {
   useEffect(()=>{
-    init(document.getElementById('circuit'), {strokeWidth: 1, "color": {"r": 230, "g": 230, "b": 240}})
+    //224, 251, 255
+    init(document.getElementById('circuit'), {strokeWidth: 1, "color": {"r": 204, "g": 251, "b": 255}})
   },[])
   return (
     <div style={{position: "relative", minHeight:"100vh"}}>
