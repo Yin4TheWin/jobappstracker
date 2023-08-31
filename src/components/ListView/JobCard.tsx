@@ -1,7 +1,7 @@
 import LinkIcon from '@mui/icons-material/Link';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 
-import { Card, IconButton, Typography } from '@mui/material';
+import { Card, Grid, IconButton, Typography } from '@mui/material';
 
 import { ItemTypes } from "../../globals/types/DraggableItemTypes";
 import { useDrag } from 'react-dnd'
@@ -24,11 +24,24 @@ export default function JobCard({isOwner, job, handleOpenJobApp, handleOpenJobLi
             color: 'white',
             position: 'relative',
         }}>
-            <Typography variant="h5" color={"black"} align="left" margin={"1%"} marginLeft={"2%"}><button className="link" onClick={handleOpenJobApp(job)}>{job.company}</button>  
-            {job.link && <IconButton onClick={handleOpenJobLink(job)}>
-                <LinkIcon/>
-            </IconButton>}
-            </Typography>
+            <Grid container>
+                <Grid item xs={10}>
+                <Typography onClick={handleOpenJobApp(job)} variant="h5" color={"#069"} align="left" margin={"1%"} marginLeft={"2%"} sx={{textDecoration: 'underline'}}>
+                {job.company}
+                {job.link && 
+                    <IconButton onClick={(e)=>{
+                        e.stopPropagation()
+                        handleOpenJobLink(job)()
+                    }}>
+                    <LinkIcon/>
+                    </IconButton>
+                }
+                </Typography>
+                
+                </Grid>
+                <Grid item xs={2}></Grid>
+            </Grid>
+            
             <Typography align="left" color="gray" margin={"1%"} marginLeft={"2%"}>{job.position}</Typography>
             {isOwner && <IconButton style={{
                 position: 'absolute',
