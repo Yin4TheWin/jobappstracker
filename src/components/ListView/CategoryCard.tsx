@@ -99,7 +99,7 @@ export default function CategoryCard({title, titleColor, isOwner, toggleModal, s
             </Typography>}
             footer={modalFooter}
             />
-            <p className="mini center" style={{color: titleColor, marginTop: '2%'}}>{title}</p>    
+            <p className="mini center" style={{color: titleColor, marginTop: '2%'}}>{title+" ("+(jobsOfMyCategory?Object.keys(jobsOfMyCategory!).length:0)+")"}</p>    
             {isOwner && <IconButton style={{
                 position: 'absolute',
                 top: '0px',
